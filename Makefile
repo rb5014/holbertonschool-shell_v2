@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -pedantic
+CFLAGS = -std=c90 -Wall -Werror -Wextra -pedantic
 EXE = hsh
 
 all: *.c
