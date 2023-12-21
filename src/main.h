@@ -1,5 +1,6 @@
 #ifndef MAIN_H
 #define MAIN_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -7,7 +8,8 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <signal.h>
-extern char **environ;
+#include "custom_functions/custom_functions.h"
+
 int is_env(char *arg);
 int is_exit(char *arg);
 int is_cd(char *arg);

@@ -8,30 +8,30 @@
 
 int _which(char **args, int *status)
 {
-	char *path = getenv("PATH"), *copyenv, *cmdpath, *token, *envNULL;
+	char *path = _getenv("PATH"), *copyenv, *cmdpath, *token, *envNULL;
 	int lenarg, lentok;
 
 	if (strchr(args[0], '/'))
 		return (0);
 	if (path)
 	{
-		copyenv = strdup(path);
-		lenarg = strlen(args[0]);
-		cmdpath = strdup(args[0]);
+		copyenv = _strdup(path);
+		lenarg = _strlen(args[0]);
+		cmdpath = _strdup(args[0]);
 		envNULL = copyenv;
 		while ((token = strtok(envNULL, ":")) != NULL)
 		{
 			envNULL = NULL;
-			lentok = strlen(token);
+			lentok = _strlen(token);
 			free(cmdpath);
-			cmdpath = calloc((lentok + lenarg + 2), sizeof(char));
-			cmdpath = strcpy(cmdpath, token);
-			cmdpath = strcat(cmdpath, "/");
-			cmdpath = strcat(cmdpath, args[0]);
+			cmdpath = _calloc((lentok + lenarg + 2), sizeof(char));
+			cmdpath = _strcpy(cmdpath, token);
+			cmdpath = _strcat(cmdpath, "/");
+			cmdpath = _strcat(cmdpath, args[0]);
 			if (access(cmdpath, F_OK) == 0)
 			{
 				free(args[0]);
-				args[0] = strdup(cmdpath);
+				args[0] = _strdup(cmdpath);
 				free(cmdpath);
 				free(copyenv);
 				return (0);
@@ -41,7 +41,7 @@ int _which(char **args, int *status)
 		free(copyenv);
 	}
 	write(STDERR_FILENO, "./hsh: 1: ", 10);
-	write(STDERR_FILENO, args[0], strlen(args[0]));
+	write(STDERR_FILENO, args[0], _strlen(args[0]));
 	write(STDERR_FILENO, ": not found\n", 12);
 	*status = 127;
 	return (-1);

@@ -71,14 +71,13 @@ int main(void)
 		{
 			token = strtok(linetoNULL, delim);
 			if (token == NULL)
-			{
 				break;
-			}
 			linetoNULL = NULL;
 			nb_args++;
 			/*add + 1 in realloc to add a NULL pointer at the end of the array */
-			args = realloc(args, sizeof(char *) * (nb_args + 1));
-			args[nb_args - 1] = strdup(token);
+			args = _realloc(args, sizeof(char *) * (nb_args),
+						    sizeof(char *) * (nb_args + 1));
+			args[nb_args - 1] = _strdup(token);
 			args[nb_args] = NULL; /* Terminate the array */
 		}
 		if (nb_args > 0)

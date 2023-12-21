@@ -7,7 +7,7 @@
 
 int is_env(char *arg)
 {
-	if (arg && strcmp(arg, "env") == 0)
+	if (arg && _strcmp(arg, "env") == 0)
 	{
 		printenv();
 		return (0);
@@ -22,7 +22,7 @@ int is_env(char *arg)
  */
 int is_exit(char *arg)
 {
-	if (strcmp(arg, "exit") == 0)
+	if (_strcmp(arg, "exit") == 0)
 		return (1);
 	return (0);
 }
@@ -34,7 +34,7 @@ int is_exit(char *arg)
  */
 int is_cd(char *arg)
 {
-	if (strcmp(arg, "exit") == 0)
+	if (_strcmp(arg, "cd") == 0)
 		return (1);
 	return (0);
 }
