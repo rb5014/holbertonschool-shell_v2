@@ -1,12 +1,13 @@
 #include "main.h"
 /**
  * _which - find exec in the path, change strings to get full pathname
+ * * @prog_name: name of the program
  * @args: pointer of pointer to strings
- * @status: pointer of status to change if not found
+ * @status: pointer of status to change if error
  * Return: nothing
  */
 
-int _which(char **args, int *status)
+int _which(char *prog_name, char **args, int *status)
 {
 	char *path = _getenv("PATH"), *copyenv, *cmdpath, *token, *envNULL;
 	int lenarg, lentok;
@@ -40,9 +41,7 @@ int _which(char **args, int *status)
 		free(cmdpath);
 		free(copyenv);
 	}
-	write(STDERR_FILENO, "./hsh: 1: ", 10);
-	write(STDERR_FILENO, args[0], _strlen(args[0]));
-	write(STDERR_FILENO, ": not found\n", 12);
 	*status = 127;
+	print_error_message(prog_name, args[0], NULL, *status);
 	return (-1);
 }

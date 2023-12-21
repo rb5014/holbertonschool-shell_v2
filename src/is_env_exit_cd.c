@@ -17,13 +17,39 @@ int is_env(char *arg)
 
 /**
  * is_exit - if exit found, free arg and return 0
- * @arg: arg to check if it is "exit"
+ * @prog_name: name of the program
+ * @args: args to check if it is "exit"
+ * @nb_args: number of args
+ * @status: pointer of status to change if error
  * Return: 1 if found, 0 if not
  */
-int is_exit(char *arg)
+int is_exit(char *prog_name, char **args, int nb_args, int *status)
 {
-	if (_strcmp(arg, "exit") == 0)
+	if (_strcmp(args[0], "exit") == 0)
+	{
+		if (nb_args > 1)
+		{
+			if (_isnumber(args[1]))
+			{
+				int num = _atoi(args[1]);
+
+				if ((num >= 0) && (num <= 255))
+					*status = num;
+				else
+				{
+					*status = 2;
+					print_error_message(prog_name, args[0], args[1], *status);
+				}
+			}
+			else
+			{
+				*status = 2;
+				print_error_message(prog_name, args[0], args[1], *status);
+			}
+		}
+
 		return (1);
+	}
 	return (0);
 }
 

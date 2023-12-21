@@ -48,18 +48,20 @@ void SIGINT_handler(int signum)
 }
 /**
  * main - creates a shell
- * @argc: Number of arguments
- * @argv: Pointer to argument strings
+ * @argc: number of args
+ * @argv: array of arg strings
  * Return: Always 0
  */
-int main(void)
+int main(int argc, char *argv[])
 {
 	size_t len = 0;
 	char **args = NULL;
 	ssize_t nread;
-	char *delim = " \n", *line = NULL, *linetoNULL, *token = NULL;
+	char *delim = " \n", *line = NULL, *linetoNULL, *token = NULL, *prog_name;
 	int status = 0, nb_args = 0, exit_flag = 0;
 
+	if (argc)
+		prog_name = strdup(argv[0]);
 	signal(SIGINT, SIGINT_handler);
 
 	while ((exit_flag == 0) &&
@@ -82,15 +84,14 @@ int main(void)
 		}
 		if (nb_args > 0)
 		{
-			exit_flag = is_exit(args[0]);
-			if ((exit_flag == 0) && (_which(args, &status) == 0))
+			exit_flag = is_exit(prog_name, args, nb_args, &status);
+			if ((exit_flag == 0) && (_which(prog_name, args, &status) == 0))
 				fork_wait_execve(args, &status);
 		}
 		free_loop(args, nb_args);
 	}
-	if (status != 0)
-		status = 2;
 	free(args);
 	free(line);
+	free(prog_name);
 	exit(status);
 }

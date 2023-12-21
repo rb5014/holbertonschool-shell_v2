@@ -15,5 +15,7 @@ void *_realloc(void *ptr, size_t old_size, size_t new_size);
 int _strcmp(const char *s1, const char *s2);
 char *_getenv(const char *name);
 char *_strchr(char *s, char c);
+int _isnumber(char *str);
+int _atoi(const char *str);
 
 #endif /* CUSTOM_FUNCTIONS_H */
