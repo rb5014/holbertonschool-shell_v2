@@ -11,7 +11,7 @@ int _which(char **args, int *status)
 	char *path = _getenv("PATH"), *copyenv, *cmdpath, *token, *envNULL;
 	int lenarg, lentok;
 
-	if (strchr(args[0], '/'))
+	if (_strchr(args[0], '/'))
 		return (0);
 	if (path)
 	{
