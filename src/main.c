@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 	int status = 0, nb_args = 0, exit_flag = 0;
 
 	if (argc)
-		prog_name = strdup(argv[0]);
+		prog_name = _strdup(argv[0]);
 	signal(SIGINT, SIGINT_handler);
 
 	while ((exit_flag == 0) &&
