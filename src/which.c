@@ -37,8 +37,6 @@ int _which(char *prog_name, char **args, int *status)
 				free(copyenv);
 				return (0);
 			}
-			else if (is_env(args[0]))
-				return (1);
 		}
 		free(cmdpath);
 		free(copyenv);

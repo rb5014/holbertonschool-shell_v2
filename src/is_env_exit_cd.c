@@ -39,10 +39,7 @@ int is_exit(char *prog_name, char **args, int nb_args, int *status)
 					print_error_message(prog_name, args[0], args[1], *status);
 				}
 				else if (num > 255)
-				{
 					*status = 232;
-					print_error_message(prog_name, args[0], args[1], *status);
-				}
 				else
 					*status = num;
 			}

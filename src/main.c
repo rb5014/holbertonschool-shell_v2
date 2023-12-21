@@ -86,8 +86,9 @@ int main(int argc, char *argv[])
 		if (nb_args > 0)
 		{
 			exit_flag = is_exit(prog_name, args, nb_args, &status);
-			if ((exit_flag == 0) && (_which(prog_name, args, &status) == 0))
-				fork_wait_execve(args, &status);
+			if (is_env(args[0]) == 0)
+				if ((exit_flag == 0) && (_which(prog_name, args, &status) == 0))
+					fork_wait_execve(args, &status);
 		}
 		free_loop(args, nb_args);
 	}
