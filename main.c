@@ -48,7 +48,8 @@ void SIGINT_handler(int signum)
 }
 /**
  * main - creates a shell
- *
+ * @argc: Number of arguments
+ * @argv: Pointer to argument strings
  * Return: Always 0
  */
 int main(void)
@@ -61,7 +62,7 @@ int main(void)
 
 	signal(SIGINT, SIGINT_handler);
 
-	while ((exit_flag == 0) && (write(STDOUT_FILENO, "($) ", 4)) &&
+	while ((exit_flag == 0) &&
 		   ((nread = getline(&line, &len, stdin)) != -1))
 	{
 		nb_args = 0;
