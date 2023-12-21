@@ -1,4 +1,4 @@
-#include "custom_functions.h"
+#include "custom_std_functions.h"
 
 /**
  * _strdup - returns a pointer to a new string which is a duplicate of the

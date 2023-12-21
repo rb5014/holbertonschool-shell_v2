@@ -1,4 +1,4 @@
-#include "custom_functions.h"
+#include "custom_std_functions.h"
 
 /**
  * _isnumber - checks if a string is a valid integer number.

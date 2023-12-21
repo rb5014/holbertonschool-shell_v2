@@ -1,4 +1,4 @@
-#include "custom_functions.h"
+#include "custom_std_functions.h"
 
 /**
  * _strchr - locates a character in a string.

@@ -29,7 +29,7 @@ int _which(char *prog_name, char **args, int *status)
 			cmdpath = _strcpy(cmdpath, token);
 			cmdpath = _strcat(cmdpath, "/");
 			cmdpath = _strcat(cmdpath, args[0]);
-			if (access(cmdpath, F_OK) == 0)
+			if ((access(cmdpath, F_OK) == 0))
 			{
 				free(args[0]);
 				args[0] = _strdup(cmdpath);

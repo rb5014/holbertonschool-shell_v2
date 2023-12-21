@@ -59,6 +59,7 @@
   "files.associations": {
     "sstream": "c",
     "custom_functions.h": "c",
-    "main.h": "c"
+    "main.h": "c",
+    "custom_std_functions.h": "c"
   }
 }
