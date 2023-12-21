@@ -24,6 +24,7 @@ void free_loop(char **args, int nb_args)
 void fork_wait_execve(char **p, int *status)
 {
 	pid_t child = 0;
+	int wstatus;
 
 	child = fork();
 	if (child == 0)
@@ -35,7 +36,8 @@ void fork_wait_execve(char **p, int *status)
 	}
 	else
 	{
-		wait(&(*status));
+		wait(&wstatus);
+		*status = WEXITSTATUS(wstatus);
 	}
 }
 /**
