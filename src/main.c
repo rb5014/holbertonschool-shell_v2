@@ -63,7 +63,6 @@ int main(int argc, char *argv[])
 	if (argc)
 		prog_name = _strdup(argv[0]);
 	signal(SIGINT, SIGINT_handler);
-
 	while ((exit_flag == 0) &&
 		   ((nread = getline(&line, &len, stdin)) != -1))
 	{

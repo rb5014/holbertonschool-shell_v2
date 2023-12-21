@@ -1,4 +1,4 @@
-#include "main.h"
+#include "custom_functions.h"
 /**
  * printenv - print all environment variables and their content
  */
@@ -8,7 +8,7 @@ void printenv(void)
 
 	while (environ[i] != NULL)
 	{
-		puts(environ[i]);
+		printf("%s\n", environ[i]);
 		i++;
 	}
 }

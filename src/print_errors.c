@@ -12,6 +12,7 @@ void print_error_message(char *prog_name, char *cmd, char *arg, int status)
 	switch (status)
 	{
 		case 2:
+		case 232:
 			fprintf(stderr, "%s: 1: %s: Illegal number: %s\n", prog_name, cmd, arg);
 			break;
 

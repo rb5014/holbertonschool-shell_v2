@@ -17,6 +17,5 @@ int is_cd(char *arg);
 int _which(char *prog_name, char **args, int *status);
 void fork_wait_execve(char **p, int *status);
 void free_loop(char **args, int nb_args);
-void printenv(void);
 void SIGINT_handler(int signum);
 #endif

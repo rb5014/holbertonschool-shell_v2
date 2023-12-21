@@ -2,7 +2,7 @@
 /**
  * is_env - prints environment variables if env found
  * @arg: arg to check
- * Return: 0 if found, -1 if not or error
+ * Return: 1 if found, 0 if not
  */
 
 int is_env(char *arg)
@@ -10,9 +10,9 @@ int is_env(char *arg)
 	if (arg && _strcmp(arg, "env") == 0)
 	{
 		printenv();
-		return (0);
+		return (1);
 	}
-	return (-1);
+	return (0);
 }
 
 /**
@@ -33,13 +33,18 @@ int is_exit(char *prog_name, char **args, int nb_args, int *status)
 			{
 				int num = _atoi(args[1]);
 
-				if ((num >= 0) && (num <= 255))
-					*status = num;
-				else
+				if (num < 0)
 				{
 					*status = 2;
 					print_error_message(prog_name, args[0], args[1], *status);
 				}
+				else if (num > 255)
+				{
+					*status = 232;
+					print_error_message(prog_name, args[0], args[1], *status);
+				}
+				else
+					*status = num;
 			}
 			else
 			{
