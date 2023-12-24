@@ -50,17 +50,33 @@ void do_exit(char *prog_name, char **args, int nb_args, int *status)
 /**
  * do_cd - change the current working directory
  * @prog_name: name of the program
- * @args: args to check if it is "exit"
+ * @args: args to check if it is "cd"
  * @nb_args: number of args
  * @status: pointer of status to change if error
  * Return: 1 if found, 0 if not
  */
 int do_cd(char *prog_name, char **args, int nb_args, int *status)
 {
-	prog_name = prog_name;
-	args = args;
-	nb_args = nb_args;
 	status = status;
+
+	char *new_dir = NULL;
+
+	if (nb_args > 1)
+	{
+		if (_strcmp(args[1], "-"))
+			new_dir = _getenv("OLDPWD");
+		else
+			new_dir = args[1];
+	}
+	else
+	{
+		new_dir = _getenv("HOME");
+	}
+	if (chdir(new_dir) == -1)
+	{
+		if (errno == ENOENT)
+			print_error_message(prog_name, args[0], args[1], *status);
+	}
 	return (0);
 }
 

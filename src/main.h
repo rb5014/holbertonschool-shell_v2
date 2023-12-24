@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <signal.h>
+#include "errno.h"
 #include "custom_std_functions/custom_std_functions.h"
 
 int is_builtin(char *prog_name, char **args, int nb_args, int *status);
