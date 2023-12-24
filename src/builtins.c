@@ -57,8 +57,6 @@ void do_exit(char *prog_name, char **args, int nb_args, int *status)
  */
 int do_cd(char *prog_name, char **args, int nb_args, int *status)
 {
-	status = status;
-
 	char *new_dir = NULL;
 
 	if (nb_args > 1)
