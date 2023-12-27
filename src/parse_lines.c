@@ -1,31 +1,5 @@
 #include "main.h"
 
-/**
- * do_cmd - Tries to execute a command.
- * @prog_name: The name of the program.
- * @env: Pointer to the environment variables.
- * @status: Pointer to an int to store the status of the command execution.
- * @args: Array of strings representing the command and its arguments.
- * @nb_args: Number of arguments in 'args'.
- * @exit_flag: Pointer to an int that signals if the program should exit.
- * Description: Checks if the command is a built-in function and executes it.
- * If not, tries to locate the command and execute it.
- * Updates 'exit_flag' if needed.
- */
-void do_cmd(char *prog_name, char ***env, int *status, char **args,
-			int nb_args, int *exit_flag)
-{
-	int builtin_flag = 0;
-
-	builtin_flag = is_builtin(prog_name, env, args, nb_args, status);
-	if (builtin_flag == 0)
-	{
-		if ((_which(prog_name, *env, args, status) == 0))
-			fork_wait_execve(env, args, status);
-	}
-	else if (builtin_flag == -1)
-		*exit_flag = builtin_flag;
-}
 
 /**
  * populate_args - Splits a string into an array of arguments.

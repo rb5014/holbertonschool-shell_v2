@@ -13,10 +13,14 @@
 
 int is_builtin(char *prog_name, char ***env, char **args,
 			   int nb_args, int *status);
-void printenv(char **env);
+void do_env(char **env);
 void do_exit(char *prog_name, char **args, int nb_args, int *status);
 void print_error_message(char *prog_name, char *cmd, char *arg, int status);
 int do_cd(char *prog_name, char ***env, char **args, int nb_args, int *status);
+char *determine_new_directory(char *prog_name, char **args, int nb_args,
+							  char ***env, int *status, int *old_dir_flag);
+int change_directory(char *prog_name, char **args, char *new_dir,
+					 char *cur_dir, char ***env, int old_dir_flag, int *status);
 
 void free_env(char **env);
 char **copy_envp(char *original_envp[]);

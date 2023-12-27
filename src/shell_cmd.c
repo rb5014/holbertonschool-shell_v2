@@ -1,6 +1,68 @@
 #include "main.h"
 
 /**
+ * do_cmd - Tries to execute a command.
+ * @prog_name: The name of the program.
+ * @env: Pointer to the environment variables.
+ * @status: Pointer to an int to store the status of the command execution.
+ * @args: Array of strings representing the command and its arguments.
+ * @nb_args: Number of arguments in 'args'.
+ * @exit_flag: Pointer to an int that signals if the program should exit.
+ * Description: Checks if the command is a built-in function and executes it.
+ * If not, tries to locate the command and execute it.
+ * Updates 'exit_flag' if needed.
+ */
+void do_cmd(char *prog_name, char ***env, int *status, char **args,
+			int nb_args, int *exit_flag)
+{
+	int builtin_flag = 0;
+
+	builtin_flag = is_builtin(prog_name, env, args, nb_args, status);
+	if (builtin_flag == 0)
+	{
+		if ((_which(prog_name, *env, args, status) == 0))
+			fork_wait_execve(env, args, status);
+	}
+	else if (builtin_flag == -1)
+		*exit_flag = builtin_flag;
+}
+
+/**
+ * is_builtin - Checks if a command is a built-in command.
+ * @prog_name: Name of the program.
+ * @env: Pointer to array of environment variables.
+ * @args: Array of strings representing the arguments passed to the program.
+ * @nb_args: Number of arguments.
+ * @status: Pointer to an int representing the program's exit status.
+ * Description: Checks if the command is 'env', 'exit', or 'cd' and executes
+ * the corresponding function. For 'exit', updates the exit flag in main.
+ * Return: 1 if a built-in command is found and executed, -1 for 'exit',
+ * 0 if no built-in command is found.
+ */
+int is_builtin(char *prog_name, char ***env, char **args,
+			   int nb_args, int *status)
+{
+	if (_strcmp(args[0], "env") == 0)
+	{
+		do_env(*env);
+		return (1);
+	}
+	else if (_strcmp(args[0], "exit") == 0)
+	{
+		do_exit(prog_name, args, nb_args, status);
+		return (-1); /* -1 to update exit_flag in main */
+	}
+	else if (_strcmp(args[0], "cd") == 0)
+	{
+		if (do_cd(prog_name, env, args, nb_args, status) == 0)
+			return (1);
+		else
+			return (-1);
+	}
+	return (0);
+}
+
+/**
  * _which - Finds the executable in the PATH and
  *          updates the command with its full pathname.
  * @prog_name: Name of the program.
