@@ -56,18 +56,15 @@ void do_exit(char *prog_name, char **args, int nb_args, int *status)
 
 /**
  * determine_new_directory - Determines the new directory for 'cd' command.
- * @prog_name: Program name.
  * @args: Array of arguments passed to the command.
  * @nb_args: Number of arguments.
  * @env: Environment variables array.
- * @status: Pointer to status code.
  * Description: Determines the new directory to change to. Uses 'OLDPWD'
  * for '-' argument, or 'HOME' if no argument is provided. Updates status
  * and prints error message if 'HOME' is not set.
  * Return: Pointer to the new directory string.
  */
-char *determine_new_directory(char *prog_name, char **args, int nb_args,
-							  char ***env, int *status)
+char *determine_new_directory(char **args, int nb_args, char ***env)
 {
 	char *new_dir = NULL;
 
@@ -83,11 +80,6 @@ char *determine_new_directory(char *prog_name, char **args, int nb_args,
 	else
 	{
 		new_dir = _getenv("HOME", *env);
-		if (!new_dir)
-		{
-			*status = 1;
-			print_error_message(prog_name, args[0], "HOME", *status);
-		}
 	}
 	return (new_dir);
 }
@@ -106,10 +98,13 @@ char *determine_new_directory(char *prog_name, char **args, int nb_args,
  * messages as needed.
  * Return: 0 on success, -1 on failure.
  */
-int change_directory(char *prog_name, char **args, char *new_dir,
+int change_directory(char *prog_name, char **args, int nb_args, char *new_dir,
 					 char *cur_dir, char ***env, int *status)
 {
 	char *abs_new_dir = NULL;
+
+	if (new_dir == NULL)
+		new_dir = cur_dir;
 
 	if (chdir(new_dir) == -1)
 	{
@@ -120,7 +115,8 @@ int change_directory(char *prog_name, char **args, char *new_dir,
 	}
 	else
 	{
-		printf("%s\n", new_dir);
+		if (nb_args > 1)
+			printf("%s\n", new_dir);
 		abs_new_dir = getcwd(abs_new_dir, 0);
 		_setenv("PWD", abs_new_dir, 1, env);
 		free(abs_new_dir);
@@ -147,10 +143,9 @@ int do_cd(char *prog_name, char ***env, char **args, int nb_args, int *status)
 	char *cur_dir = NULL, *new_dir = NULL;
 
 	cur_dir = getcwd(cur_dir, 0);
-	new_dir = determine_new_directory(prog_name, args, nb_args, env,
-									  status);
+	new_dir = determine_new_directory(args, nb_args, env);
 
-	if ((!new_dir) || (change_directory(prog_name, args, new_dir, cur_dir,
+	if ((!new_dir) || (change_directory(prog_name, args, nb_args, new_dir, cur_dir,
 									 env, status) == -1))
 	{
 		free(cur_dir);
