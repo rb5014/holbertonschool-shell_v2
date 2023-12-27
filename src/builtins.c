@@ -89,6 +89,7 @@ char *determine_new_directory(char **args, int nb_args, char ***env)
  * change_directory - Changes the current working directory.
  * @prog_name: Program name.
  * @args: Array of arguments passed to the command.
+ * @nb_args: Number of arguments.
  * @new_dir: New directory to change to.
  * @cur_dir: Current directory string.
  * @env: Environment variables array.
@@ -105,16 +106,12 @@ int change_directory(char *prog_name, char **args, int nb_args, char *new_dir,
 	char *abs_new_dir = NULL;
 
 	if (new_dir == NULL)
-	{
 		new_dir = cur_dir;
-		printf("%s\n", cur_dir);
-	}
 
 	if (chdir(new_dir) == -1)
 	{
 		if (errno == ENOENT)
 		{
-			printf("%s\n", cur_dir);
 			print_error_message(prog_name, args[0], args[1], *status);
 		}
 	}
