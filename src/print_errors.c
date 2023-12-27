@@ -1,12 +1,17 @@
 #include "main.h"
 
 /**
-* print_error_message - print the error message corresponding to the status
-* @prog_name: name of the program
-* @cmd: name of the command used (exit, ls, etc)
-* @arg: arg of the command
-* @status: status associated with the error
-*/
+ * print_error_message - Prints the error message corresponding
+ * to a given status.
+ * @prog_name: Name of the program.
+ * @cmd: Name of the command that caused the error (e.g., 'exit', 'ls').
+ * @arg: Argument of the command that caused the error.
+ * @status: Status code associated with the error.
+ * Description: Depending on the status code, prints
+ * an appropriate error message
+ * to the standard error stream. Handles different error cases, such as illegal
+ * numbers, command not found, and directory change failures.
+ */
 void print_error_message(char *prog_name, char *cmd, char *arg, int status)
 {
 	switch (status)

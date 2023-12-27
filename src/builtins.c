@@ -1,6 +1,10 @@
 #include "main.h"
+
 /**
- * printenv - print all environment variables and their content
+ * printenv - Prints all environment variables and their contents.
+ * @env: Array of strings representing the environment variables.
+ * Description: Iterates through the array of environment variables and
+ * prints each one to the standard output.
  */
 void printenv(char **env)
 {
@@ -14,12 +18,15 @@ void printenv(char **env)
 }
 
 /**
- * do_exit - print error message if any and update exit code
- * @prog_name: name of the program
- * @args: args to check if it is "exit"
- * @nb_args: number of args
- * @status: pointer of status to change if error
- * Return: 1 if found, 0 if not
+ * do_exit - Checks if 'exit' command is valid and updates exit code.
+ * @prog_name: Name of the program.
+ * @args: Array of strings representing the arguments passed to the program.
+ * @nb_args: Number of arguments.
+ * @status: Pointer to an int representing the program's exit status.
+ * Description: If 'exit' command is valid,
+ * updates the exit status accordingly.
+ * Prints an error message if the exit status is invalid.
+ * Return: 1 if 'exit' command is found, 0 otherwise.
  */
 void do_exit(char *prog_name, char **args, int nb_args, int *status)
 {
@@ -48,16 +55,21 @@ void do_exit(char *prog_name, char **args, int nb_args, int *status)
 }
 
 /**
- * do_cd - change the current working directory
- * @prog_name: name of the program
- * @args: args to check if it is "cd"
- * @nb_args: number of args
- * @status: pointer of status to change if error
- * Return: 1 if found, 0 if not
+ * do_cd - Changes the current working directory.
+ * @prog_name: Name of the program.
+ * @env: Pointer to array of environment variables.
+ * @args: Array of strings representing the arguments passed to the program.
+ * @nb_args: Number of arguments.
+ * @status: Pointer to an int representing the program's exit status.
+ * Description: Changes the working directory based on the given argument.
+ * Updates the PWD and OLDPWD environment variables. Prints error message
+ * if directory change fails.
+ * Return: 1 if directory change is successful, 0 otherwise.
  */
 int do_cd(char *prog_name, char ***env, char **args, int nb_args, int *status)
 {
 	char *cur_dir = NULL, *new_dir = NULL, *abs_new_dir = NULL;
+
 	cur_dir = getcwd(cur_dir, 0);
 
 	if (nb_args > 1)
@@ -92,14 +104,19 @@ int do_cd(char *prog_name, char ***env, char **args, int nb_args, int *status)
 }
 
 /**
- * is_builtin - if builtin found
- * @prog_name: name of the program
- * @args: args to check if it is "exit"
- * @nb_args: number of args
- * @status: pointer of status to change if error
- * Return: 1 if found, 0 if not
+ * is_builtin - Checks if a command is a built-in command.
+ * @prog_name: Name of the program.
+ * @env: Pointer to array of environment variables.
+ * @args: Array of strings representing the arguments passed to the program.
+ * @nb_args: Number of arguments.
+ * @status: Pointer to an int representing the program's exit status.
+ * Description: Checks if the command is 'env', 'exit', or 'cd' and executes
+ * the corresponding function. For 'exit', updates the exit flag in main.
+ * Return: 1 if a built-in command is found and executed, -1 for 'exit',
+ * 0 if no built-in command is found.
  */
-int is_builtin(char *prog_name, char ***env, char **args, int nb_args, int *status)
+int is_builtin(char *prog_name, char ***env, char **args,
+			   int nb_args, int *status)
 {
 	if (_strcmp(args[0], "env") == 0)
 	{

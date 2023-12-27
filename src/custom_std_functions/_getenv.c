@@ -1,10 +1,16 @@
 #include "custom_std_functions.h"
 
 /**
- * _getenv - retrieves the value of an environment variable.
- * @name: name of the environment variable.
- * Return: pointer to the value in the environment, or NULL if not found.
+ * _getenv - Retrieves the value of an environment variable.
+ * @name: Name of the environment variable to retrieve.
+ * @env: Array of strings representing the environment variables.
+ * Description: Searches for the specified environment variable in the provided
+ * environment array. If found, returns a pointer to the value part of the
+ * variable (excluding its name and the '=' character).
+ * Return: Pointer to the value of the environment variable,
+ * or NULL if not found.
  */
+
 char *_getenv(const char *name, char **env)
 {
 	int i = 0, j = 0;
