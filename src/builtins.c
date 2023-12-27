@@ -2,13 +2,13 @@
 /**
  * printenv - print all environment variables and their content
  */
-void printenv(void)
+void printenv(char **env)
 {
 	int i = 0;
 
-	while (environ[i] != NULL)
+	while (env[i] != NULL)
 	{
-		printf("%s\n", environ[i]);
+		printf("%s\n", env[i]);
 		i++;
 	}
 }
@@ -55,26 +55,39 @@ void do_exit(char *prog_name, char **args, int nb_args, int *status)
  * @status: pointer of status to change if error
  * Return: 1 if found, 0 if not
  */
-int do_cd(char *prog_name, char **args, int nb_args, int *status)
+int do_cd(char *prog_name, char ***env, char **args, int nb_args, int *status)
 {
-	char *new_dir = NULL;
+	char *cur_dir = NULL, *new_dir = NULL, *abs_new_dir = NULL;
+	cur_dir = getcwd(cur_dir, 0);
 
 	if (nb_args > 1)
 	{
-		if (_strcmp(args[1], "-"))
-			new_dir = _getenv("OLDPWD");
+		if (_strcmp(args[1], "-") == 0)
+		{
+			new_dir = _getenv("OLDPWD", *env);
+		}
 		else
 			new_dir = args[1];
 	}
 	else
 	{
-		new_dir = _getenv("HOME");
+		new_dir = _getenv("HOME", *env);
 	}
 	if (chdir(new_dir) == -1)
 	{
 		if (errno == ENOENT)
+		{
 			print_error_message(prog_name, args[0], args[1], *status);
+		}
 	}
+	else
+	{
+		abs_new_dir = getcwd(abs_new_dir, 0);
+		_setenv("PWD", abs_new_dir, 1, env);
+		free(abs_new_dir);
+		_setenv("OLDPWD", cur_dir, 1, env);
+	}
+	free(cur_dir);
 	return (0);
 }
 
@@ -86,11 +99,11 @@ int do_cd(char *prog_name, char **args, int nb_args, int *status)
  * @status: pointer of status to change if error
  * Return: 1 if found, 0 if not
  */
-int is_builtin(char *prog_name, char **args, int nb_args, int *status)
+int is_builtin(char *prog_name, char ***env, char **args, int nb_args, int *status)
 {
 	if (_strcmp(args[0], "env") == 0)
 	{
-		printenv();
+		printenv(*env);
 		return (1);
 	}
 	else if (_strcmp(args[0], "exit") == 0)
@@ -100,7 +113,7 @@ int is_builtin(char *prog_name, char **args, int nb_args, int *status)
 	}
 	else if (_strcmp(args[0], "cd") == 0)
 	{
-		if (do_cd(prog_name, args, nb_args, status) == 0)
+		if (do_cd(prog_name, env, args, nb_args, status) == 0)
 			return (1);
 		else
 			return (-1);

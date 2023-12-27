@@ -7,9 +7,9 @@
  * Return: nothing
  */
 
-int _which(char *prog_name, char **args, int *status)
+int _which(char *prog_name, char **env, char **args, int *status)
 {
-	char *path = _getenv("PATH"), *copyenv, *cmdpath, *token, *envNULL;
+	char *path = _getenv("PATH", env), *copyenv, *cmdpath, *token, *envNULL;
 	int lenarg, lentok;
 
 	if (_strchr(args[0], '/'))

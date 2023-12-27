@@ -21,7 +21,7 @@ void free_loop(char **args, int nb_args)
  * @status: error status
  * Return: nothing
  */
-void fork_wait_execve(char **p, int *status)
+void fork_wait_execve(char ***env, char **p, int *status)
 {
 	pid_t child = 0;
 	int wstatus;
@@ -29,7 +29,7 @@ void fork_wait_execve(char **p, int *status)
 	child = fork();
 	if (child == 0)
 	{
-		if (execve(p[0], p, environ) == -1)
+		if (execve(p[0], p, *env) == -1)
 		{
 			perror("./shell");
 		}
@@ -76,16 +76,16 @@ int populate_args(char *line, char ***args)
 /**
  * do_cmd - try to execute the command
 */
-void do_cmd(char *prog_name, int *status, char **args,
+void do_cmd(char *prog_name, char ***env, int *status, char **args,
 			int nb_args, int *exit_flag)
 {
 	int builtin_flag = 0;
 
-	builtin_flag = is_builtin(prog_name, args, nb_args, status);
+	builtin_flag = is_builtin(prog_name, env, args, nb_args, status);
 	if (builtin_flag == 0)
 	{
-		if ((_which(prog_name, args, status) == 0))
-			fork_wait_execve(args, status);
+		if ((_which(prog_name, *env, args, status) == 0))
+			fork_wait_execve(env, args, status);
 	}
 	else if (builtin_flag == -1)
 		*exit_flag = builtin_flag;
@@ -93,14 +93,14 @@ void do_cmd(char *prog_name, int *status, char **args,
 /**
  * process_line - parses the line and execute its command
 */
-void process_line(char *prog_name, int *status, char *line, int *exit_flag)
+void process_line(char *prog_name, char ***env, int *status, char *line, int *exit_flag)
 {
 	char **args = NULL;
 	int nb_args;
 
 	nb_args = populate_args(line, &args);
 	if (nb_args > 0)
-		do_cmd(prog_name, status, args, nb_args, exit_flag);
+		do_cmd(prog_name, env, status, args, nb_args, exit_flag);
 	free_loop(args, nb_args);
 }
 
@@ -108,7 +108,7 @@ void process_line(char *prog_name, int *status, char *line, int *exit_flag)
  * read_lines - loop over stdin lines and process each of them
  *
 */
-void read_lines(char *prog_name, int *status)
+void read_lines(char *prog_name, char ***env, int *status)
 {
 	int exit_flag = 0;
 	size_t len = 0;
@@ -118,7 +118,7 @@ void read_lines(char *prog_name, int *status)
 	while ((exit_flag == 0) &&
 		   ((nread = getline(&line, &len, stdin)) != -1))
 	{
-		process_line(prog_name, status, line, &exit_flag);
+		process_line(prog_name, env, status, line, &exit_flag);
 	}
 	free(line);
 }
@@ -130,17 +130,20 @@ void read_lines(char *prog_name, int *status)
  * @argv: array of arg strings
  * Return: Always 0
  */
-int main(int argc, char *argv[])
+int main(int argc, char *argv[], char *envp[])
 {
+	char **hsh_env = copy_envp(envp);
 	char *prog_name = NULL;
 	int status = 0;
+
 
 	if (argc)
 		prog_name = _strdup(argv[0]);
 	signal(SIGINT, SIGINT_handler);
 
-	read_lines(prog_name, &status);
+	read_lines(prog_name, &hsh_env, &status);
 
 	free(prog_name);
+	free_env(hsh_env);
 	exit(status);
 }
