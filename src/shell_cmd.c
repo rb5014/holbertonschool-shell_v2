@@ -64,7 +64,7 @@ int is_builtin(char *prog_name, char ***env, char **args,
 
 /**
  * _which - Finds the executable in the PATH and
- *          updates the command with its full pathname.
+ * updates the command with its full pathname.
  * @prog_name: Name of the program.
  * @env: Array of environment variables.
  * @args: Pointer to an array of strings,

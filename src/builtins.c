@@ -81,7 +81,7 @@ char *determine_new_directory(char **args, int nb_args, char ***env)
 	{
 		new_dir = _getenv("HOME", *env);
 	}
-	return (new_dir);
+	return (new_dir == NULL? getcwd(new_dir, 0) : new_dir);
 }
 
 /**
@@ -103,19 +103,19 @@ int change_directory(char *prog_name, char **args, int nb_args, char *new_dir,
 {
 	char *abs_new_dir = NULL;
 
-	if (new_dir == NULL)
-		new_dir = cur_dir;
-
 	if (chdir(new_dir) == -1)
 	{
 		if (errno == ENOENT)
+		{
+			printf("%s\n", cur_dir);
 			print_error_message(prog_name, args[0], args[1], *status);
+		}
 
 		return (-1);
 	}
 	else
 	{
-		if (nb_args > 1)
+		if ((nb_args > 1) && (_strcmp(args[1], "-") == 0))
 			printf("%s\n", new_dir);
 		abs_new_dir = getcwd(abs_new_dir, 0);
 		_setenv("PWD", abs_new_dir, 1, env);
