@@ -81,7 +81,10 @@ char *determine_new_directory(char **args, int nb_args, char ***env)
 	{
 		new_dir = _getenv("HOME", *env);
 	}
-	return (new_dir == NULL? getcwd(new_dir, 0) : new_dir);
+	if (new_dir == NULL)
+		new_dir = getcwd(new_dir, 0);
+
+	return (new_dir);
 }
 
 /**
