@@ -54,7 +54,18 @@ void do_exit(char *prog_name, char **args, int nb_args, int *status)
 	}
 }
 
-
+/**
+ * determine_new_directory - Determines the new directory for 'cd' command.
+ * @prog_name: Program name.
+ * @args: Array of arguments passed to the command.
+ * @nb_args: Number of arguments.
+ * @env: Environment variables array.
+ * @status: Pointer to status code.
+ * Description: Determines the new directory to change to. Uses 'OLDPWD'
+ * for '-' argument, or 'HOME' if no argument is provided. Updates status
+ * and prints error message if 'HOME' is not set.
+ * Return: Pointer to the new directory string.
+ */
 char *determine_new_directory(char *prog_name, char **args, int nb_args,
 							  char ***env, int *status)
 {
@@ -81,6 +92,20 @@ char *determine_new_directory(char *prog_name, char **args, int nb_args,
 	return (new_dir);
 }
 
+/**
+ * change_directory - Changes the current working directory.
+ * @prog_name: Program name.
+ * @args: Array of arguments passed to the command.
+ * @new_dir: New directory to change to.
+ * @cur_dir: Current directory string.
+ * @env: Environment variables array.
+ * @status: Pointer to status code.
+ * Description: Changes the working directory to 'new_dir'. If successful,
+ * updates PWD and OLDPWD environment variables. Prints the new directory.
+ * Handles errors and prints error
+ * messages as needed.
+ * Return: 0 on success, -1 on failure.
+ */
 int change_directory(char *prog_name, char **args, char *new_dir,
 					 char *cur_dir, char ***env, int *status)
 {
