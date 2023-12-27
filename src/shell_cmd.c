@@ -54,7 +54,7 @@ int is_builtin(char *prog_name, char ***env, char **args,
 	}
 	else if (_strcmp(args[0], "cd") == 0)
 	{
-		if (do_cd(prog_name, env, args, nb_args, status) == 0)
+		if (do_cd(prog_name, env, args, nb_args, status) == 1)
 			return (1);
 		else
 			return (-1);

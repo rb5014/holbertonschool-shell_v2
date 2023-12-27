@@ -56,7 +56,7 @@ void do_exit(char *prog_name, char **args, int nb_args, int *status)
 
 
 char *determine_new_directory(char *prog_name, char **args, int nb_args,
-							  char ***env, int *status, int *old_dir_flag)
+							  char ***env, int *status)
 {
 	char *new_dir = NULL;
 
@@ -65,7 +65,6 @@ char *determine_new_directory(char *prog_name, char **args, int nb_args,
 		if (_strcmp(args[1], "-") == 0)
 		{
 			new_dir = _getenv("OLDPWD", *env);
-			*old_dir_flag = 1;
 		}
 		else
 			new_dir = args[1];
@@ -83,7 +82,7 @@ char *determine_new_directory(char *prog_name, char **args, int nb_args,
 }
 
 int change_directory(char *prog_name, char **args, char *new_dir,
-					 char *cur_dir, char ***env, int old_dir_flag, int *status)
+					 char *cur_dir, char ***env, int *status)
 {
 	char *abs_new_dir = NULL;
 
@@ -96,8 +95,7 @@ int change_directory(char *prog_name, char **args, char *new_dir,
 	}
 	else
 	{
-		if (old_dir_flag)
-			printf("%s\n", new_dir);
+		printf("%s\n", new_dir);
 		abs_new_dir = getcwd(abs_new_dir, 0);
 		_setenv("PWD", abs_new_dir, 1, env);
 		free(abs_new_dir);
@@ -122,14 +120,13 @@ int change_directory(char *prog_name, char **args, char *new_dir,
 int do_cd(char *prog_name, char ***env, char **args, int nb_args, int *status)
 {
 	char *cur_dir = NULL, *new_dir = NULL;
-	int old_dir_flag = 0;
 
 	cur_dir = getcwd(cur_dir, 0);
 	new_dir = determine_new_directory(prog_name, args, nb_args, env,
-									  status, &old_dir_flag);
+									  status);
 
 	if ((!new_dir) || (change_directory(prog_name, args, new_dir, cur_dir,
-									 env, old_dir_flag, status) == -1))
+									 env, status) == -1))
 	{
 		free(cur_dir);
 		return (0);
