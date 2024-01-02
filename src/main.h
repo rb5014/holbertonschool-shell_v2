@@ -11,6 +11,30 @@
 #include "errno.h"
 #include "custom_std_functions/custom_std_functions.h"
 
+typedef enum
+{
+	TO_FILE,
+	TO_FILE_APPEND,
+	FROM_FILE,
+	HERE_DOCUMENT,
+	PIPE,
+	NONE
+} operator;
+
+typedef struct
+{
+	const char *op_str;
+	operator op_enum_value;
+} op_str_to_enum_value;
+
+typedef struct
+{
+	char **args;
+	int nb_args;
+	operator op;
+	char *file_for_redir;
+} command;
+
 int is_builtin(char *prog_name, char ***env, char **args,
 			   int nb_args, int *status);
 void do_env(char **env);
@@ -28,6 +52,10 @@ void read_lines(char *prog_name, char ***env, int *status);
 void process_line(char *prog_name, char ***env, int *status,
 				  char *line, int *exit_flag);
 int populate_args(char *line, char ***args);
+
+command *resize_cmd_list(command *cmd_list, int *old_size);
+void add_new_cmd(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir);
+
 void do_cmd(char *prog_name, char ***env, int *status, char **args,
 			int nb_args, int *exit_flag);
 int _which(char *prog_name, char **env, char **args, int *status);
