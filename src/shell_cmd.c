@@ -12,19 +12,24 @@
  * If not, tries to locate the command and execute it.
  * Updates 'exit_flag' if needed.
  */
-void do_cmd(char *prog_name, char ***env, int *status, char **args,
-			int nb_args, int *exit_flag)
+void do_cmd(char *prog_name, char ***env, int *status, command cmd, int *exit_flag)
 {
-	int builtin_flag = 0;
+	int builtin_flag = 0, std_fd_save = -1;
 
-	builtin_flag = is_builtin(prog_name, env, args, nb_args, status);
+	if (cmd.op != NONE)
+		std_fd_save = do_redirection(cmd.op, cmd.file_for_redir);
+	builtin_flag = is_builtin(prog_name, env, cmd.args, cmd.nb_args, status);
 	if (builtin_flag == 0)
 	{
-		if ((_which(prog_name, *env, args, status) == 0))
-			fork_wait_execve(env, args, status);
+		if ((_which(prog_name, *env, cmd.args, status) == 0))
+			fork_wait_execve(env, cmd.args, status);
+
 	}
 	else if (builtin_flag == -1)
 		*exit_flag = builtin_flag;
+	if (cmd.op != NONE)
+		do_revert_redirection(cmd.op, std_fd_save);
+
 }
 
 /**

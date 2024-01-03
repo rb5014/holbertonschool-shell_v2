@@ -9,6 +9,8 @@
 #include <string.h>
 #include <signal.h>
 #include "errno.h"
+#include <fcntl.h>
+
 #include "custom_std_functions/custom_std_functions.h"
 
 typedef enum
@@ -53,13 +55,17 @@ void process_line(char *prog_name, char ***env, int *status,
 				  char *line, int *exit_flag);
 int populate_args(char *line, char ***args);
 
+int gen_command_list(command **cmd_list, char **args, int nb_args);
 command *resize_cmd_list(command *cmd_list, int *old_size);
 void add_new_cmd(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir);
 
-void do_cmd(char *prog_name, char ***env, int *status, char **args,
-			int nb_args, int *exit_flag);
+void do_cmd(char *prog_name, char ***env, int *status, command cmd, int *exit_flag);
 int _which(char *prog_name, char **env, char **args, int *status);
 void fork_wait_execve(char ***env, char **p, int *status);
 void free_loop(char **args, int nb_args);
 void SIGINT_handler(int signum);
+
+int do_redirection(operator op, char *file_for_redir);
+void do_revert_redirection(operator op, int std_fd_save);
+int stdout_to_file(char *file_for_redir, int is_append);
 #endif

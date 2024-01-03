@@ -1,50 +1,5 @@
 #include "main.h"
 
-int gen_command_list(command **cmd_list, char **args, int nb_args)
-{
-	int i = 0;
-	int nb_cmds = 0;
-	int cmd_start_index = 0;
-	char *file_for_redir = NULL;
-
-	operator op = NONE;
-
-	op_str_to_enum_value conv[] = {{">", TO_FILE}, {">>", TO_FILE_APPEND},
-	{"<", FROM_FILE}, {"<<", HERE_DOCUMENT}, {NULL, NONE}};
-
-	for (i = 0; i < nb_args; i++)
-	{
-		int j;
-
-		if (_strcmp(args[i], "|") == 0)
-		{
-			add_new_cmd(cmd_list, &nb_cmds, &args[cmd_start_index], i - cmd_start_index, op, file_for_redir);
-			cmd_start_index = i + 1; /* Offset cmd start index to arg after the operator */
-			op = NONE; /* Reset operator for following cmd */
-		}
-		else
-		{
-			for (j = 0; conv[j].op_str != NULL; j++)
-			{
-				if (_strcmp(args[i], conv[j].op_str) == 0)
-				{
-					op = conv[j].op_enum_value;
-					if ((i + 1) < nb_args)
-					{
-						file_for_redir = args[i + 1];
-
-					}
-					break;
-				}
-			}
-		}
-
-	}
-	/* Add last command (or the only command in the line) */
-	add_new_cmd(cmd_list, &nb_cmds, &args[cmd_start_index], i - cmd_start_index, op, file_for_redir);
-
-	return (nb_cmds);
-}
 
 /**
  * populate_args - Splits a string into an array of arguments.
@@ -103,7 +58,10 @@ void process_line(char *prog_name, char ***env, int *status,
 	for (i = 0; i < nb_cmds; i++)
 	{
 		if (cmd_list[i].nb_args > 0)
-			do_cmd(prog_name, env, status, cmd_list[i].args, cmd_list[i].nb_args, exit_flag);
+		{
+			do_cmd(prog_name, env, status, cmd_list[i], exit_flag);
+			free_loop(cmd_list[i].args, cmd_list[i].nb_args);
+		}
 	}
 	free(cmd_list);
 	free_loop(args, nb_args);

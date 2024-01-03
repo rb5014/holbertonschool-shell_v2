@@ -14,7 +14,8 @@ void free_loop(char **args, int nb_args)
 
 	for (i = 0; i < nb_args; i++)
 	{
-		free(args[i]);
+		if (args[i])
+			free(args[i]);
 		args[i] = NULL;
 	}
 	free(args);
