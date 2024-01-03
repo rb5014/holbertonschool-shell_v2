@@ -10,8 +10,10 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 
 	operator op = NONE;
 
-	op_str_to_enum_value conv[] = {{">", TO_FILE}, {">>", TO_FILE_APPEND},
-	{"<", FROM_FILE}, {"<<", HERE_DOCUMENT}, {NULL, NONE}};
+	/* The order is very important, because otherwise _strstr will find the wrong substring */
+	/* For example if it checks ">" before ">>", the result will succeed even if op is ">>" */
+	op_str_to_enum_value conv[] = {{">>", TO_FILE_APPEND}, {">", TO_FILE},
+	{"<<", HERE_DOCUMENT}, {"<", FROM_FILE}, {NULL, NONE}};
 
 	for (i = 0; i < nb_args; i++)
 	{
@@ -19,7 +21,7 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 
 		if (_strcmp(args[i], "|") == 0)
 		{
-			add_new_cmd(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir);
+			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir);
 			current_cmd = NULL;
 			nb_args_current_cmd = 0;
 			op = NONE; /* Reset operator for following cmd */
@@ -38,20 +40,31 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 					}
 					break;
 				}
+				else if (_strstr(args[i], conv[j].op_str))
+				{
+					char *token = NULL, *args_to_NULL = args[i];
+
+					op = conv[j].op_enum_value;
+					token = strtok(args_to_NULL, conv[j].op_str);
+					if (token == NULL)
+						break;
+					args_to_NULL = NULL;
+					add_new_arg(&current_cmd, token, &nb_args_current_cmd);
+					token = strtok(args_to_NULL, conv[j].op_str);
+					file_for_redir = token;
+					break;
+				}
 			}
 			if (conv[j].op_str == NULL) /* If no op was found in this current iteration of the args loop */
 			{
-				nb_args_current_cmd++;
-				current_cmd = _realloc(current_cmd, sizeof(char *) * nb_args_current_cmd, sizeof(char *) * (nb_args_current_cmd + 1));
-				current_cmd[nb_args_current_cmd - 1] = _strdup(args[i]);
-				current_cmd[nb_args_current_cmd] = NULL;
+				add_new_arg(&current_cmd, args[i], &nb_args_current_cmd);
 			}
 
 		}
 
 	}
 	/* Add last command (or the only command in the line) */
-	add_new_cmd(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir);
+	add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir);
 
 	return (nb_cmds);
 }
@@ -72,7 +85,7 @@ command *resize_cmd_list(command *cmd_list, int *old_size)
 	return (new_cmd_list);
 }
 
-void add_new_cmd(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir)
+void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir)
 {
 	*cmd_list = resize_cmd_list(*cmd_list, nb_cmds);
 

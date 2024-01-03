@@ -1,5 +1,28 @@
 #include "main.h"
 
+char **resize_arg_list(char **arg_list, int *old_size)
+{
+	int new_size = (*old_size) + 1;
+	char **new_arg_list = _realloc(arg_list,
+									 sizeof(char *) * (*old_size),
+									 sizeof(char *) * (new_size + 1));
+	if (new_arg_list == NULL)
+	{
+		perror("Failed to reallocate memory");
+		exit(EXIT_FAILURE);
+	}
+	*old_size = new_size;
+
+	return (new_arg_list);
+}
+
+void add_new_arg(char ***arg_list, char *arg, int *nb_args)
+{
+	*arg_list = resize_arg_list(*arg_list, nb_args);
+
+	(*arg_list)[*nb_args - 1] = _strdup(arg);
+	(*arg_list)[*nb_args] = NULL; /* Terminate the array */
+}
 
 /**
  * populate_args - Splits a string into an array of arguments.
@@ -22,12 +45,7 @@ int populate_args(char *line, char ***args)
 		if (token == NULL)
 			break;
 		linetoNULL = NULL;
-		nb_args++;
-		/*add + 1 in realloc to add a NULL pointer at the end of the array */
-		*args = _realloc(*args, sizeof(char *) * (nb_args),
-						sizeof(char *) * (nb_args + 1));
-		(*args)[nb_args - 1] = _strdup(token);
-		(*args)[nb_args] = NULL; /* Terminate the array */
+		add_new_arg(args, token, &nb_args);
 	}
 	return (nb_args);
 }

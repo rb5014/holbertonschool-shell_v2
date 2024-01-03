@@ -25,7 +25,7 @@ typedef enum
 
 typedef struct
 {
-	const char *op_str;
+	char *op_str;
 	operator op_enum_value;
 } op_str_to_enum_value;
 
@@ -54,10 +54,12 @@ void read_lines(char *prog_name, char ***env, int *status);
 void process_line(char *prog_name, char ***env, int *status,
 				  char *line, int *exit_flag);
 int populate_args(char *line, char ***args);
+void add_new_arg(char ***arg_list, char *arg, int *nb_args);
+char **resize_arg_list(char **arg_list, int *old_size);
 
 int gen_command_list(command **cmd_list, char **args, int nb_args);
 command *resize_cmd_list(command *cmd_list, int *old_size);
-void add_new_cmd(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir);
+void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir);
 
 void do_cmd(char *prog_name, char ***env, int *status, command cmd, int *exit_flag);
 int _which(char *prog_name, char **env, char **args, int *status);

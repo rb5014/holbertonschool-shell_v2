@@ -36,14 +36,13 @@ void do_revert_redirection(operator op, int std_fd_save)
 		default:
 			break;
 	}
-	close(std_fd_save);
 }
 
 int stdout_to_file(char *file_for_redir, int is_append)
 {
 	int fd;
 
-	if (is_append)
+	if ((is_append != 0))
 		fd = open(file_for_redir, O_CREAT | O_WRONLY | O_APPEND, S_IRWXU);
 	else
 		fd = open(file_for_redir, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);

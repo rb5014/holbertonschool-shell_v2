@@ -19,6 +19,7 @@ int add_env_var(const char *name, const char *value,
 				char ***env, int env_size);
 int update_env_var(const char *name, const char *value, char ***env);
 char *_strchr(char *s, char c);
+char *_strstr(char *s, char *sub_s);
 int _isnumber(char *str);
 int _atoi(const char *str);
 
