@@ -37,7 +37,8 @@ void add_new_arg(char ***arg_list, char *arg, int *nb_args)
 int populate_args(char *line, char ***args)
 {
 	char *delim = " \n", *linetoNULL = line, *token = NULL;
-	int nb_args = 0;
+	int nb_args = 0, i;
+	char *operators[] = {">>", ">", "<<", "<", "|", NULL}, *found_op = NULL;
 
 	while (1)
 	{
@@ -45,7 +46,42 @@ int populate_args(char *line, char ***args)
 		if (token == NULL)
 			break;
 		linetoNULL = NULL;
-		add_new_arg(args, token, &nb_args);
+		for (i = 0; operators[i] != NULL; i++)
+		{
+			found_op = _strstr(token, operators[i]);
+			if ((_strcmp(token, operators[i]) != 0) && found_op)
+			{
+				char *separated_token = NULL, *token_to_NULL = token;
+				int add_token_to_args = 0;
+
+				if ((_strlen(operators[i]) == 1) && (*(found_op + 1) == operators[i][0]))
+				{
+					add_new_arg(args, token, &nb_args);
+					break;
+				}
+
+				while (1)
+				{
+					separated_token = strtok(token_to_NULL, operators[i]);
+					token_to_NULL = NULL;
+					if (separated_token == NULL)
+						break;
+
+					if (add_token_to_args == 0)
+						add_token_to_args = 1;
+					else
+					{
+						add_new_arg(args, operators[i], &nb_args);
+						add_token_to_args = 0;
+					}
+					add_new_arg(args, separated_token, &nb_args);
+				}
+				break;
+			}
+		}
+
+		if (operators[i] == NULL)
+			add_new_arg(args, token, &nb_args);
 	}
 	return (nb_args);
 }

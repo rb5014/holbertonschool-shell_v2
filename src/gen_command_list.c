@@ -40,20 +40,6 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 					}
 					break;
 				}
-				else if (_strstr(args[i], conv[j].op_str))
-				{
-					char *token = NULL, *args_to_NULL = args[i];
-
-					op = conv[j].op_enum_value;
-					token = strtok(args_to_NULL, conv[j].op_str);
-					if (token == NULL)
-						break;
-					args_to_NULL = NULL;
-					add_new_arg(&current_cmd, token, &nb_args_current_cmd);
-					token = strtok(args_to_NULL, conv[j].op_str);
-					file_for_redir = token;
-					break;
-				}
 			}
 			if (conv[j].op_str == NULL) /* If no op was found in this current iteration of the args loop */
 			{
