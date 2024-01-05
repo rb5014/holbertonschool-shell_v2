@@ -16,11 +16,6 @@ int do_redirection(operator op, char *file_for_redir)
 			stdout_to_file(file_for_redir, 1);
 			break;
 
-		case FROM_FILE:
-			std_fd_save = dup(STDIN_FILENO);
-			stdin_from_file(file_for_redir);
-			break;
-
 		default:
 			break;
 	}
@@ -52,20 +47,6 @@ int stdout_to_file(char *file_for_redir, int is_append)
 	else
 		fd = open(file_for_redir, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
 	if (dup2(fd, STDOUT_FILENO) == -1)
-	{
-		perror("dup2");
-		return (-1);
-	}
-	close(fd);
-	return (fd);
-}
-
-int stdin_from_file(char *file_for_redir)
-{
-	int fd;
-
-	fd = open(file_for_redir, O_CREAT | O_RDONLY);
-	if (dup2(fd, STDIN_FILENO) == -1)
 	{
 		perror("dup2");
 		return (-1);
