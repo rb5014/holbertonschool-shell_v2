@@ -18,27 +18,29 @@ char **resize_arg_list(char **arg_list, int *old_size)
 
 void add_new_arg(char ***arg_list, char *arg, int *nb_args)
 {
+	if ((arg == NULL) || (_strlen(arg) == 0))
+		return;
 	*arg_list = resize_arg_list(*arg_list, nb_args);
 
 	(*arg_list)[*nb_args - 1] = _strdup(arg);
 	(*arg_list)[*nb_args] = NULL; /* Terminate the array */
 }
 
-/**
- * populate_args - Splits a string into an array of arguments.
- * @line: String to be split.
- * @args: Pointer to an array of strings for storing arguments.
- * Description: Tokenizes 'line' using space and newline as delimiters.
- * Each token is dynamically allocated and added to 'args', which is
- * resized as needed. Ensures the array is NULL-terminated.
- * Return: Total number of arguments stored in 'args'.
+/*
+ * populate_args - Splits a line into arguments based on whitespace
+ * and operators
+ * @line: The line to be split
+ * @args: Pointer to an array of strings where the arguments are stored
+ *
+ * Return: The number of arguments added to args
  */
-
 int populate_args(char *line, char ***args)
 {
 	char *delim = " \n", *linetoNULL = line, *token = NULL;
-	int nb_args = 0, i;
-	char *operators[] = {">>", ">", "<<", "<", "|", NULL}, *found_op = NULL;
+	int nb_args = 0;
+	char *operators[] = {">>", ">", "<<", "<", "|", NULL};
+	char **separated_token = NULL;
+	int nb_sep_token = 0, i, j;
 
 	while (1)
 	{
@@ -46,45 +48,30 @@ int populate_args(char *line, char ***args)
 		if (token == NULL)
 			break;
 		linetoNULL = NULL;
+
 		for (i = 0; operators[i] != NULL; i++)
 		{
-			found_op = _strstr(token, operators[i]);
-			if ((_strcmp(token, operators[i]) != 0) && found_op)
+			nb_sep_token = 0;
+			separated_token = split_token_with_delim(token, operators[i], &nb_sep_token);
+			for (j = 0; j < nb_sep_token; j++)
 			{
-				char *separated_token = NULL, *token_to_NULL = token;
-				int add_token_to_args = 0;
-
-				if ((_strlen(operators[i]) == 1) && (*(found_op + 1) == operators[i][0]))
-				{
-					add_new_arg(args, token, &nb_args);
-					break;
-				}
-
-				while (1)
-				{
-					separated_token = strtok(token_to_NULL, operators[i]);
-					token_to_NULL = NULL;
-					if (separated_token == NULL)
-						break;
-
-					if (add_token_to_args == 0)
-						add_token_to_args = 1;
-					else
-					{
-						add_new_arg(args, operators[i], &nb_args);
-						add_token_to_args = 0;
-					}
-					add_new_arg(args, separated_token, &nb_args);
-				}
-				break;
+				add_new_arg(args, separated_token[j], &nb_args);
+				free(separated_token[j]);
 			}
+			if (separated_token)
+				free(separated_token); /* Free the array of separated tokens */
+			if (nb_sep_token > 0)
+				break; /* Found and processed an operator */
 		}
 
-		if (operators[i] == NULL)
+		if (nb_sep_token == 0)
+		{
 			add_new_arg(args, token, &nb_args);
+		}
 	}
 	return (nb_args);
 }
+
 
 /**
  * process_line - Parses a line of input and executes its command.

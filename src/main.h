@@ -54,6 +54,7 @@ void read_lines(char *prog_name, char ***env, int *status);
 void process_line(char *prog_name, char ***env, int *status,
 				  char *line, int *exit_flag);
 int populate_args(char *line, char ***args);
+char **split_token_with_delim(char *token, char *delim, int *nb_args);
 void add_new_arg(char ***arg_list, char *arg, int *nb_args);
 char **resize_arg_list(char **arg_list, int *old_size);
 
