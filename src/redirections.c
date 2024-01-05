@@ -1,6 +1,6 @@
 #include "main.h"
 
-int do_redirection(operator op, char *file_for_redir)
+int do_redirection(operator op, char *file_for_redir, char *cmd_name)
 {
 	int std_fd_save = -1;
 
@@ -18,7 +18,8 @@ int do_redirection(operator op, char *file_for_redir)
 
 		case FROM_FILE:
 			std_fd_save = dup(STDIN_FILENO);
-			stdin_from_file(file_for_redir);
+			if (stdin_from_file(file_for_redir, cmd_name) == -1)
+				return (-1);
 			break;
 
 		default:
@@ -66,9 +67,19 @@ int stdout_to_file(char *file_for_redir, int is_append)
 	return (fd);
 }
 
-int stdin_from_file(char *file_for_redir)
+int stdin_from_file(char *file_for_redir, char *cmd_name)
 {
 	int fd;
+	struct stat st;
+
+	lstat(file_for_redir, &st);
+
+	if (S_ISDIR(st.st_mode))
+	{
+		fprintf(stderr, "%s: stdin: Is a directory\n", cmd_name);
+		return (-1);
+	}
+
 
 	fd = open(file_for_redir, O_CREAT | O_RDONLY);
 	if (dup2(fd, STDIN_FILENO) == -1)

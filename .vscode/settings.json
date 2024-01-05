@@ -57,9 +57,10 @@
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
-    "sstream": "c",
-    "custom_functions.h": "c",
-    "main.h": "c",
-    "custom_std_functions.h": "c"
-  }
+	"sstream": "c",
+	"custom_functions.h": "c",
+	"main.h": "c",
+	"custom_std_functions.h": "c",
+	"types.h": "c"
+}
 }
