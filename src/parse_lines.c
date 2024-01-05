@@ -129,5 +129,6 @@ void read_lines(char *prog_name, char ***env, int *status)
 	{
 		process_line(prog_name, env, status, line, &exit_flag);
 	}
+	printf("status: %i\n", *status);
 	free(line);
 }

@@ -21,7 +21,7 @@ void do_cmd(char *prog_name, char ***env, int *status, command cmd, int *exit_fl
 		std_fd_save = do_redirection(cmd.op, cmd.file_for_redir, cmd.args[0]);
 		if (std_fd_save == -1)
 		{
-			*status = -1;
+			*status = 1;
 			return;
 		}
 	}
