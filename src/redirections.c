@@ -1,6 +1,6 @@
 #include "main.h"
 
-int do_redirection(operator op, char *file_for_redir, char *cmd_name)
+int do_redirection(operator op, char *file_for_redir, char *cmd_name, int *status)
 {
 	int std_fd_save = -1;
 
@@ -18,7 +18,7 @@ int do_redirection(operator op, char *file_for_redir, char *cmd_name)
 
 		case FROM_FILE:
 			std_fd_save = dup(STDIN_FILENO);
-			if (stdin_from_file(file_for_redir, cmd_name) == -1)
+			if (stdin_from_file(file_for_redir, cmd_name, status) == -1)
 				return (-1);
 			break;
 
@@ -67,19 +67,21 @@ int stdout_to_file(char *file_for_redir, int is_append)
 	return (fd);
 }
 
-int stdin_from_file(char *file_for_redir, char *cmd_name)
+int stdin_from_file(char *file_for_redir, char *cmd_name, int *status)
 {
 	int fd;
 
 	if (access(file_for_redir, F_OK) == -1)
 	{
-		fprintf(stderr, "./hsh: cannot open %s: No such file\n", cmd_name);
+		fprintf(stderr, "./hsh: 1: cannot open %s: No such file\n", cmd_name);
+		*status = 2;
 		return (-1);
 	}
 
 	if (access(file_for_redir, R_OK) == -1)
 	{
 		fprintf(stderr, "%s: stdin: Is a directory\n", cmd_name);
+		*status = 1;
 		return (-1);
 	}
 

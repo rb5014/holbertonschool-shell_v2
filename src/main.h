@@ -69,8 +69,8 @@ void fork_wait_execve(char ***env, char **p, int *status);
 void free_loop(char **args, int nb_args);
 void SIGINT_handler(int signum);
 
-int do_redirection(operator op, char *file_for_redir, char *cmd_name);
+int do_redirection(operator op, char *file_for_redir, char *cmd_name, int *status);
 void do_revert_redirection(operator op, int std_fd_save);
 int stdout_to_file(char *file_for_redir, int is_append);
-int stdin_from_file(char *file_for_redir, char *cmd_name);
+int stdin_from_file(char *file_for_redir, char *cmd_name, int *status);
 #endif
