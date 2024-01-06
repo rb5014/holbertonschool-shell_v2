@@ -71,12 +71,19 @@ int stdin_from_file(char *file_for_redir, char *cmd_name)
 {
 	int fd;
 
-	fd = open(file_for_redir, O_CREAT | O_RDONLY);
+	if (access(file_for_redir, F_OK) == -1)
+	{
+		fprintf(stderr, "hsh: %s: No such file or directory\n", cmd_name);
+		return (-1);
+	}
+
 	if (access(file_for_redir, R_OK) == -1)
 	{
 		fprintf(stderr, "%s: stdin: Is a directory\n", cmd_name);
 		return (-1);
 	}
+
+	fd = open(file_for_redir, O_RDONLY);
 	if (dup2(fd, STDIN_FILENO) == -1)
 	{
 		perror("dup2");
