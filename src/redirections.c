@@ -16,11 +16,14 @@ int do_redirection(operator op, char *file_for_redir, char *cmd_name, int *statu
 			stdout_to_file(file_for_redir, 1);
 			break;
 
+		case HERE_DOCUMENT:
+			file_for_redir = gen_temp_heredoc_file(file_for_redir);
 		case FROM_FILE:
 			std_fd_save = dup(STDIN_FILENO);
 			if (stdin_from_file(file_for_redir, cmd_name, status) == -1)
 				return (-1);
 			break;
+		
 
 		default:
 			break;
@@ -40,11 +43,13 @@ void do_revert_redirection(operator op, int std_fd_save)
 			}
 			break;
 		case FROM_FILE:
+		case HERE_DOCUMENT:
 			if (dup2(std_fd_save, STDIN_FILENO) == -1)
 			{
 				perror("dup2");
 			}
 			break;
+
 		default:
 			break;
 	}
@@ -93,4 +98,26 @@ int stdin_from_file(char *file_for_redir, char *cmd_name, int *status)
 	}
 	close(fd);
 	return (fd);
+}
+
+char *gen_temp_heredoc_file(char *here_doc_delim)
+{
+	char *temp_file = NULL;
+	int fd;
+	char *line;
+	size_t len = 0;
+	ssize_t n_read;
+
+	/* Create a temp file of the name of the delim*/
+	sprintf(temp_file, "/tmp/%s", here_doc_delim);
+
+	fd = open(temp_file, O_CREAT | O_WRONLY | O_APPEND, S_IRWXU);
+	
+	while (_strcmp(line, here_doc_delim) != 0)
+	{
+		n_read = getline(&line, &len, stdin);
+		write(fd, line, n_read);
+	}
+
+	return (temp_file);
 }
