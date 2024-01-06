@@ -73,7 +73,7 @@ int stdin_from_file(char *file_for_redir, char *cmd_name)
 
 	if (access(file_for_redir, F_OK) == -1)
 	{
-		fprintf(stderr, "hsh: %s: No such file or directory\n", cmd_name);
+		fprintf(stderr, "./hsh: cannot open %s: No such file\n", cmd_name);
 		return (-1);
 	}
 
