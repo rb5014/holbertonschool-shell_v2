@@ -50,7 +50,8 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 
 	}
 	/* Add last command (or the only command in the line) */
-	add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir);
+	if (nb_args > 0)
+		add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir);
 
 	return (nb_cmds);
 }

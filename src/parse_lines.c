@@ -94,23 +94,21 @@ void process_line(char *prog_name, char ***env, int *status,
 
 	nb_args = populate_args(line, &args);
 
-	if (nb_args > 0)
+	nb_cmds = gen_command_list(&cmd_list, args, nb_args);
+
+	free_loop(args, nb_args);
+
+	for (i = 0; i < nb_cmds; i++)
 	{
-		nb_cmds = gen_command_list(&cmd_list, args, nb_args);
-
-		free_loop(args, nb_args);
-
-		for (i = 0; i < nb_cmds; i++)
+		if (cmd_list[i].nb_args > 0)
 		{
-			if (cmd_list[i].nb_args > 0)
-			{
-				do_cmd(prog_name, env, status, &cmd_list[i], exit_flag);
-				free_loop(cmd_list[i].args, cmd_list[i].nb_args);
-				free(cmd_list[i].file_for_redir);
-			}
+			do_cmd(prog_name, env, status, &cmd_list[i], exit_flag);
+			free_loop(cmd_list[i].args, cmd_list[i].nb_args);
+			free(cmd_list[i].file_for_redir);
 		}
-		free(cmd_list);
 	}
+	free(cmd_list);
+
 }
 
 /**
