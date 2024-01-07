@@ -61,6 +61,12 @@
 	"custom_functions.h": "c",
 	"main.h": "c",
 	"custom_std_functions.h": "c",
-	"types.h": "c"
+	"types.h": "c",
+	"cctype": "c",
+	"cstdarg": "c",
+	"cstdio": "c",
+	"cstdlib": "c",
+	"cwchar": "c",
+	"cwctype": "c"
 }
 }

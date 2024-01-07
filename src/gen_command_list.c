@@ -36,7 +36,7 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 					if ((i + 1) < nb_args)
 					{
 						i++;
-						file_for_redir = args[i];
+						file_for_redir = _strdup(args[i]);
 					}
 					break;
 				}
@@ -79,10 +79,10 @@ void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args,
 	(*cmd_list)[*nb_cmds - 1].nb_args = nb_args;
 	(*cmd_list)[*nb_cmds - 1].op = op;
 	if (file_for_redir != NULL)
-	{
 		(*cmd_list)[*nb_cmds - 1].file_for_redir = file_for_redir;
-	}
-
+	else
+		(*cmd_list)[*nb_cmds - 1].file_for_redir = _strdup("");
+	(*cmd_list)[*nb_cmds - 1].fd = -1;
 }
 
 

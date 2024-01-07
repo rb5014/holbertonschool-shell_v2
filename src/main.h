@@ -36,6 +36,7 @@ typedef struct
 	int nb_args;
 	operator op;
 	char *file_for_redir;
+	int fd;
 } command;
 
 int is_builtin(char *prog_name, char ***env, char **args,
@@ -63,14 +64,15 @@ int gen_command_list(command **cmd_list, char **args, int nb_args);
 command *resize_cmd_list(command *cmd_list, int *old_size);
 void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir);
 
-void do_cmd(char *prog_name, char ***env, int *status, command cmd, int *exit_flag);
+void do_cmd(char *prog_name, char ***env, int *status, command *cmd, int *exit_flag);
 int _which(char *prog_name, char **env, char **args, int *status);
 void fork_wait_execve(char ***env, char **p, int *status);
 void free_loop(char **args, int nb_args);
 void SIGINT_handler(int signum);
 
-int do_redirection(operator op, char *file_for_redir, char *cmd_name, int *status);
-void do_revert_redirection(operator op, int std_fd_save);
-int stdout_to_file(char *file_for_redir, int is_append);
-int stdin_from_file(char *file_for_redir, char *cmd_name, int *status);
+int do_redirection(command *cmd, int *status);
+void do_revert_redirection(command *cmd, int std_fd_save);
+int stdout_to_file(command *cmd, int is_append);
+int stdin_from_file(command *cmd, int *status);
+int gen_temp_heredoc_file(command *cmd);
 #endif
