@@ -20,3 +20,15 @@ void free_loop(char **args, int nb_args)
 	}
 	free(args);
 }
+
+void free_commands(command **cmd_list, int nb_cmds)
+{
+	int i;
+
+	for (i = 0; i < nb_cmds; i++)
+	{
+		free_loop((*cmd_list)[i].args, (*cmd_list)[i].nb_args);
+		free((*cmd_list)[i].file_for_redir);
+	}
+	free(*cmd_list);
+}

@@ -16,13 +16,21 @@
 
 typedef enum
 {
+	NONE,
 	TO_FILE,
 	TO_FILE_APPEND,
 	FROM_FILE,
 	HERE_DOCUMENT,
-	PIPE,
-	NONE
+	PIPE
 } operator;
+
+typedef enum
+{
+	PIPE_NONE,
+	PIPE_START,
+	PIPE_MIDDLE,
+	PIPE_END
+} position_in_pipe;
 
 typedef struct
 {
@@ -37,6 +45,10 @@ typedef struct
 	operator op;
 	char *file_for_redir;
 	int fd;
+	int pipe_fd[2];
+	int is_part_of_pipe;
+	int prev_was_pipe;
+	position_in_pipe pos_in_pipe;
 } command;
 
 int is_builtin(char *prog_name, char ***env, char **args,
@@ -62,12 +74,14 @@ char **resize_arg_list(char **arg_list, int *old_size);
 
 int gen_command_list(command **cmd_list, char **args, int nb_args);
 command *resize_cmd_list(command *cmd_list, int *old_size);
-void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir);
+void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir, int is_part_of_pipe, position_in_pipe pos_in_pipe);
 
 void do_cmd(char *prog_name, char ***env, int *status, command *cmd, int *exit_flag);
+void do_piped_cmd(char *prog_name, char ***env, int *status, command *cmd, int *exit_flag);
 int _which(char *prog_name, char **env, char **args, int *status);
 void fork_wait_execve(char ***env, char **p, int *status);
 void free_loop(char **args, int nb_args);
+void free_commands(command **cmd_list, int nb_cmds);
 void SIGINT_handler(int signum);
 
 int do_redirection(command *cmd, int *status);
@@ -75,4 +89,6 @@ void do_revert_redirection(command *cmd, int std_fd_save);
 int stdout_to_file(command *cmd, int is_append);
 int stdin_from_file(command *cmd, int *status);
 int gen_temp_heredoc_file(command *cmd);
+
+void execute_command(command *cmd, int input_fd, int output_fd, int is_last, command *cmd_list, int nb_cmds);
 #endif

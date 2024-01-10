@@ -1,5 +1,79 @@
 #include "main.h"
 
+void execute_command(command *cmd, int input_fd, int output_fd, int is_last, command *cmd_list, int nb_cmds) {
+	int i;
+
+    // First: Setup input and output for the current command
+    if (input_fd != -1) {
+        dup2(input_fd, STDIN_FILENO);
+    }
+    if (!is_last) {
+        dup2(cmd->pipe_fd[1], STDOUT_FILENO);
+    }
+
+    // Close the pipe file descriptors used by this command
+    close(cmd->pipe_fd[0]);
+    close(cmd->pipe_fd[1]);
+    if (input_fd != -1) {
+        close(input_fd);
+    }
+
+    // Next: Close all other unrelated pipe file descriptors
+    for (i = 0; i < nb_cmds; i++) {
+        if (cmd_list[i].pipe_fd[0] != -1 && cmd_list[i].pipe_fd[0] != cmd->pipe_fd[0]) {
+            close(cmd_list[i].pipe_fd[0]);
+        }
+        if (cmd_list[i].pipe_fd[1] != -1 && cmd_list[i].pipe_fd[1] != cmd->pipe_fd[1]) {
+            close(cmd_list[i].pipe_fd[1]);
+        }
+    }
+
+    // Finally: Execute the command
+    execvp(cmd->args[0], cmd->args);
+    perror("execvp");
+    exit(EXIT_FAILURE);
+}
+
+
+void do_piped_cmd(char *prog_name, char ***env, int *status, command *cmd, int *exit_flag)
+{
+	int wstatus;
+	pid_t pid = fork();
+
+	prog_name = prog_name;
+	exit_flag = exit_flag;
+
+	if (pid == 0) {
+		/* Child process */
+		if (cmd->pos_in_pipe == PIPE_START)
+		{
+			/* Redirect standard output to the write end of the pipe */
+			dup2(cmd->pipe_fd[1], STDOUT_FILENO);
+			close(cmd->pipe_fd[0]);
+			close(cmd->pipe_fd[1]);
+		}
+		if (cmd->pos_in_pipe == PIPE_END)
+		{
+			/* Redirect standard input to the read end of the pipe */
+			dup2(cmd->pipe_fd[0], STDIN_FILENO);
+			if ((cmd->pipe_fd[0] != -1) && (cmd->pos_in_pipe == PIPE_END))
+				close(cmd->pipe_fd[0]);
+		}
+
+		printf("before execve: %i %i \n", cmd->pipe_fd[0], cmd->pipe_fd[1]);
+		/* Execute the command */
+		if (execve((*cmd).args[0], (*cmd).args, *env) == -1)
+		{
+			perror("./shell");
+		}
+	}
+	else
+	{
+		/* Parent process */
+		waitpid(pid, &wstatus, 0); /* Wait for the child process to complete */
+		*status = WEXITSTATUS(wstatus);
+	}
+}
 /**
  * do_cmd - Tries to execute a command.
  * @prog_name: The name of the program.
@@ -34,7 +108,6 @@ void do_cmd(char *prog_name, char ***env, int *status, command *cmd, int *exit_f
 		*exit_flag = builtin_flag;
 	if ((*cmd).op != NONE)
 		do_revert_redirection(cmd, std_fd_save);
-
 
 }
 
