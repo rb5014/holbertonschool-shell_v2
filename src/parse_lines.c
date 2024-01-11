@@ -38,7 +38,7 @@ int populate_args(char *line, char ***args)
 {
 	char *delim = " \n", *linetoNULL = line, *token = NULL;
 	int nb_args = 0;
-	char *operators[] = {">>", ">", "<<", "<", "|", NULL};
+	char *operators[] = {">>", ">", "<<", "<", "|", ";", "&&", "||", NULL};
 	char **separated_token = NULL;
 	int nb_sep_token = 0, i, j;
 
