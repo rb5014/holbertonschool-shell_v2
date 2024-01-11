@@ -32,9 +32,9 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
     /* Wait for all child processes to finish */
     for (i = 0; i < nb_cmds; i++) {
 		wait(&wstatus);
-		if (*status == 0)
-			*status = WEXITSTATUS(wstatus);
     }
+	if ((builtin_flag == 0) && (*status == 0))
+		*status = WEXITSTATUS(wstatus);
 }
 
 void execute_command(command *cmd_list, int i, int nb_cmds, char ***env)
