@@ -25,6 +25,5 @@ int main(int argc, char *argv[], char *envp[])
 
 	free(prog_name);
 	free_env(hsh_env);
-	printf("status: %i", status);
 	exit(status);
 }
