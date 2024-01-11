@@ -120,7 +120,9 @@ int change_directory(char *prog_name, char **args, int nb_args, char *new_dir,
 		abs_new_dir = getcwd(abs_new_dir, 0);
 
 		if ((nb_args > 1) && (_strcmp(args[1], "-") == 0))
+		{
 			printf("%s\n", new_dir);
+		}
 		_setenv("PWD", abs_new_dir, 1, env);
 		free(abs_new_dir);
 		_setenv("OLDPWD", cur_dir, 1, env);

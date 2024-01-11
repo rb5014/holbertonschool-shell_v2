@@ -67,6 +67,7 @@ void execute_command(command *cmd_list, int i, int nb_cmds,  char *prog_name, ch
 		}
 		else if (builtin_flag == -1)
 			*exit_flag = builtin_flag;
+		exit(*status);
 	}
 	else if (pid < 0)
 	{
