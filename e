@@ -1,3 +1,7 @@
-echo "cd
-cd
-pwd" | ./hsh
+AUTHORS.md
+e
+hsh
+Makefile
+man_1_hsh
+README.md
+src

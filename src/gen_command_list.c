@@ -20,6 +20,8 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 	for (i = 0; i < nb_args; i++)
 	{
 		int j;
+
+		is_part_of_pipe = 0;
 		if (prev_was_pipe)
 		{
 			is_part_of_pipe = 1;
@@ -35,6 +37,15 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe);
 			prev_was_pipe = 1;
 
+			/* Reset for following cmd */
+			op = NONE; 
+			current_cmd = NULL;
+			nb_args_current_cmd = 0;
+			file_for_redir = NULL;
+		}
+		else if (_strcmp(args[i], ";") == 0)
+		{
+			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe);
 			/* Reset for following cmd */
 			op = NONE; 
 			current_cmd = NULL;
