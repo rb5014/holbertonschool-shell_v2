@@ -2,7 +2,7 @@
 
 void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char ***env, int *status, int *exit_flag)
 {
-	int i, wstatus = 0, builtin_flag;
+	int i, wstatus = 0, builtin_flag = 0;
 	int std_fd_save = -1;
 
 	for (i = 0; i < nb_cmds; i++)
