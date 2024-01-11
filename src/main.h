@@ -89,6 +89,7 @@ void do_revert_redirection(command *cmd, int std_fd_save);
 int stdout_to_file(command *cmd, int is_append);
 int stdin_from_file(command *cmd, int *status);
 int gen_temp_heredoc_file(command *cmd);
-
-void execute_command(command *cmd, int input_fd, int output_fd, int is_last, command *cmd_list, int nb_cmds);
+void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char ***env, int *status, int *exit_flag);
+void execute_command(command *cmd_list, int i, int nb_cmds, char ***env);
+void close_all_pipes(command *cmd_list, int nb_cmds);
 #endif

@@ -88,7 +88,7 @@ void process_line(char *prog_name, char ***env, int *status,
 				  char *line, int *exit_flag)
 {
 	char **args = NULL;
-	int nb_args = 0, nb_cmds = 0, i;
+	int nb_args = 0, nb_cmds = 0;
 
 	command *cmd_list = NULL;
 
@@ -97,41 +97,8 @@ void process_line(char *prog_name, char ***env, int *status,
 	nb_cmds = gen_command_list(&cmd_list, args, nb_args);
 	free_loop(args, nb_args);
 
-	for (i = 0; i < nb_cmds; i++)
-	{
-		if (cmd_list[i].nb_args == 0)
-			break;
-		if (cmd_list[i].is_part_of_pipe)
-		{
-			pid_t pid = fork();
+	execute_command_list(nb_cmds, cmd_list, prog_name, env, status, exit_flag);
 
-			if (pid == 0) { // Child process
-				int input_fd = (i == 0) ? -1 : cmd_list[i - 1].pipe_fd[0];
-				int output_fd = (i == nb_cmds - 1) ? -1 : cmd_list[i].pipe_fd[1];
-				int is_last = (i == nb_cmds - 1);
-				execute_command(&cmd_list[i], input_fd, output_fd, is_last, cmd_list, nb_cmds);
-			} else if (pid < 0) {
-				perror("fork");
-				exit(EXIT_FAILURE);
-			}
-    	}
-		else
-			do_cmd(prog_name, env, status, &cmd_list[i], exit_flag);
-
-	}
-	// Parent closes all pipe file descriptors
-    for (i = 0; i < nb_cmds - 1; i++) {
-		if (cmd_list[i].pipe_fd[0] != -1)
-        	close(cmd_list[i].pipe_fd[0]);
-
-		if (cmd_list[i].pipe_fd[1] != -1)
-        	close(cmd_list[i].pipe_fd[1]);
-    }
-
-    // Wait for all child processes to finish
-    for (i = 0; i < nb_cmds; i++) {
-        wait(NULL);
-    }
 	free_commands(&cmd_list, nb_cmds);
 }
 

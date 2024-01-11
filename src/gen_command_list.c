@@ -33,10 +33,13 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 			else
 				pos_in_pipe = PIPE_START;
 			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe);
+			prev_was_pipe = 1;
+
+			/* Reset for following cmd */
+			op = NONE; 
 			current_cmd = NULL;
 			nb_args_current_cmd = 0;
-			op = NONE; /* Reset operator for following cmd */
-			prev_was_pipe = 1;
+			file_for_redir = NULL;
 		}
 		else
 		{
@@ -108,7 +111,7 @@ void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args,
 
 	(*cmd_list)[*nb_cmds - 1].is_part_of_pipe = is_part_of_pipe;
 	(*cmd_list)[*nb_cmds - 1].pos_in_pipe = pos_in_pipe;
-	
+
 }
 
 

@@ -10,7 +10,7 @@ allc90: $(SOURCES)
 	$(CC) $(CFLAGS) -std=c90 $(SOURCES) -o $(EXE)
 
 all_no_warnings: $(SOURCES)
-	$(CC) $(SOURCES) -o $(EXE)
+	$(CC) -g $(SOURCES) -o $(EXE)
 
 .PHONY: clean
 clean:
