@@ -16,20 +16,26 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 				return;
 		}
 		builtin_flag = is_builtin(prog_name, env, cmd_list[i].args, cmd_list[i].nb_args, status);
+		if (builtin_flag == -1)
+		{
+			*exit_flag = builtin_flag;
+			break;
+		}
+		*status = 0;
 		if ((builtin_flag == 0) && (_which(prog_name, *env, cmd_list[i].args, status) == 0))
 			execute_command(cmd_list, i, nb_cmds, env);
-		else if (builtin_flag == -1)
-			*exit_flag = builtin_flag;
 
 		if (cmd_list[i].op != NONE)
 			do_revert_redirection(&cmd_list[i], std_fd_save);
+
 	}
 
 	/* Parent closes all pipe file descriptors */
 	close_all_pipes(cmd_list, nb_cmds);
 
     /* Wait for all child processes to finish */
-    for (i = 0; i < nb_cmds; i++) {
+    for (i = 0; i < nb_cmds; i++)
+	{
 		wait(&wstatus);
     }
 	if ((builtin_flag == 0) && (*status == 0))
