@@ -2,7 +2,7 @@
 
 void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char ***env, int *status, int *exit_flag)
 {
-	int i, wstatus = 0;
+	int i, wstatus = 0, builtin_flag;
 	int std_fd_save = -1;
 
 	for (i = 0; i < nb_cmds; i++)
@@ -15,7 +15,11 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 			if (std_fd_save == -1)
 				return;
 		}
-		execute_command(cmd_list, i, nb_cmds, prog_name, env, status, exit_flag);
+		builtin_flag = is_builtin(prog_name, env, cmd_list[i].args, cmd_list[i].nb_args, status);
+		if ((builtin_flag == 0) && (_which(prog_name, *env, cmd_list[i].args, status) == 0))
+			execute_command(cmd_list, i, nb_cmds, env);
+		else if (builtin_flag == -1)
+			*exit_flag = builtin_flag;
 
 		if (cmd_list[i].op != NONE)
 			do_revert_redirection(&cmd_list[i], std_fd_save);
@@ -31,10 +35,9 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
     }
 }
 
-void execute_command(command *cmd_list, int i, int nb_cmds,  char *prog_name, char ***env, int *status, int *exit_flag)
+void execute_command(command *cmd_list, int i, int nb_cmds, char ***env)
 {
 	pid_t pid = fork();
-	int builtin_flag = 0;
 
 	if (pid == 0) { /* Child process */
 		if (cmd_list[i].is_part_of_pipe)
@@ -56,18 +59,11 @@ void execute_command(command *cmd_list, int i, int nb_cmds,  char *prog_name, ch
 		/* Child close all pipe file descriptors */
     	close_all_pipes(cmd_list, nb_cmds);
 
-		builtin_flag = is_builtin(prog_name, env, cmd_list[i].args, cmd_list[i].nb_args, status);
-		if ((builtin_flag == 0) && (_which(prog_name, *env, cmd_list[i].args, status) == 0))
+		/* Execute the command */
+		if (execve(cmd_list[i].args[0], cmd_list[i].args, *env) == -1)
 		{
-			/* Execute the command */
-			if (execve(cmd_list[i].args[0], cmd_list[i].args, *env) == -1)
-			{
-				perror("./shell");
-			}
+			perror("./shell");
 		}
-		else if (builtin_flag == -1)
-			*exit_flag = builtin_flag;
-		exit(*status);
 	}
 	else if (pid < 0)
 	{
