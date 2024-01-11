@@ -2,7 +2,7 @@
 
 void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char ***env, int *status, int *exit_flag)
 {
-	int i, wstatus;
+	int i;
 	int builtin_flag = 0, std_fd_save = -1;
 
 	for (i = 0; i < nb_cmds; i++)
@@ -19,10 +19,10 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 		if (builtin_flag == 0)
 		{
 			if ((_which(prog_name, *env, cmd_list[i].args, status) == 0))
-				execute_command(cmd_list, i, nb_cmds, env);
+				execute_command(cmd_list, i, nb_cmds, env, status);
 		}
 		else if (builtin_flag == -1)
-		*exit_flag = builtin_flag;
+			*exit_flag = builtin_flag;
 		if (cmd_list[i].op != NONE)
 			do_revert_redirection(&cmd_list[i], std_fd_save);
 	}
@@ -30,16 +30,12 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 	/* Parent closes all pipe file descriptors */
 	close_all_pipes(cmd_list, nb_cmds);
 
-    /* Wait for all child processes to finish */
-    for (i = 0; i < nb_cmds; i++) {
-        wait(&wstatus);
-		*status = WEXITSTATUS(wstatus);
-    }
 }
 
-void execute_command(command *cmd_list, int i, int nb_cmds, char ***env)
+void execute_command(command *cmd_list, int i, int nb_cmds, char ***env, int *status)
 {
 	pid_t pid = fork();
+	int wstatus;
 
 	if (pid == 0) { /* Child process */
 		if (cmd_list[i].is_part_of_pipe)
@@ -67,10 +63,16 @@ void execute_command(command *cmd_list, int i, int nb_cmds, char ***env)
 			perror("./shell");
 		}
 	}
+	else if(pid > 0)
+	{
+		wait(&wstatus);
+		*status = WEXITSTATUS(wstatus);
+	}
 	else if (pid < 0)
 	{
 		perror("fork");
 	}
+	
 
 }
 
