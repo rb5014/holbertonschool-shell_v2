@@ -121,6 +121,7 @@ void read_lines(char *prog_name, char ***env, int *status)
 	while ((exit_flag == 0) &&
 		   ((nread = getline(&line, &len, stdin)) != -1))
 	{
+		*status = 0;
 		process_line(prog_name, env, status, line, &exit_flag);
 	}
 	free(line);
