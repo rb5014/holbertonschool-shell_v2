@@ -7,7 +7,6 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 
 	for (i = 0; i < nb_cmds; i++)
 	{
-		*status = 0; /* reset command status */
 		if (cmd_list[i].nb_args == 0)
 			break;
 		if (cmd_list[i].op != NONE)
