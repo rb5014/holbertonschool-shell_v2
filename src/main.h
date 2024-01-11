@@ -90,6 +90,6 @@ int stdout_to_file(command *cmd, int is_append);
 int stdin_from_file(command *cmd, int *status);
 int gen_temp_heredoc_file(command *cmd);
 void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char ***env, int *status, int *exit_flag);
-void execute_command(command *cmd_list, int i, int nb_cmds, char ***env, int *status);
+void execute_command(command *cmd_list, int i, int nb_cmds,  char *prog_name, char ***env, int *status, int *exit_flag);
 void close_all_pipes(command *cmd_list, int nb_cmds);
 #endif
