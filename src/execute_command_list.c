@@ -26,9 +26,12 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 		*status = 0;
 		if ((builtin_flag == 0) && (_which(prog_name, *env, cmd_list[i].args, status, &full_path_cmd) == 0))
 		{
-			execute_command(cmd_list, i, nb_cmds, env, full_path_cmd);
 			if (full_path_cmd)
+			{
+				execute_command(cmd_list, i, nb_cmds, env, full_path_cmd);
 				free(full_path_cmd);
+				full_path_cmd = NULL;
+			}
 		}
 
 		if (cmd_list[i].op != NONE)
