@@ -17,13 +17,13 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 			if (std_fd_save == -1)
 				return;
 		}
-		*status = 0;
 		builtin_flag = is_builtin(prog_name, env, cmd_list[i].args, cmd_list[i].nb_args, status);
 		if (builtin_flag == -1)
 		{
 			*exit_flag = builtin_flag;
 			break;
 		}
+		*status = 0;
 		if ((builtin_flag == 0) && (full_path_cmd = _which(prog_name, *env, cmd_list[i].args, status)))
 		{
 			execute_command(cmd_list, i, nb_cmds, env, full_path_cmd);
@@ -45,7 +45,9 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 
 		if (*status && (cmd_list[i].l_op == AND))
 			break;
+
 	}
+
 }
 
 void execute_command(command *cmd_list, int i, int nb_cmds, char ***env, char *full_path_cmd)
