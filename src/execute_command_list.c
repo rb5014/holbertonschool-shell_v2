@@ -155,7 +155,9 @@ char *_which(char *prog_name, char **env, char **args, int *status)
 	int lenarg, lentok;
 	char *full_path_cmd = NULL;
 
-	if (path)
+	if ((access(args[0], F_OK) == 0))
+		full_path_cmd = _strdup(args[0]);
+	else if (path)
 	{
 		copyenv = _strdup(path);
 		lenarg = _strlen(args[0]);
@@ -169,11 +171,6 @@ char *_which(char *prog_name, char **env, char **args, int *status)
 			cmdpath = _calloc((lentok + lenarg + 2), sizeof(char));
 			cmdpath = _strcpy(cmdpath, token);
 			cmdpath = _strcat(cmdpath, "/");
-			if ((access(args[0], F_OK) == 0) && _strstr(args[0], token))
-			{
-				full_path_cmd = _strdup(args[0]);
-				break;
-			}
 			cmdpath = _strcat(cmdpath, args[0]);
 			if ((access(cmdpath, F_OK) == 0))
 			{
