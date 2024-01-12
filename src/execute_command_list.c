@@ -4,7 +4,7 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 {
 	int i, wstatus = 0, builtin_flag = 0;
 	int std_fd_save = -1;
-	char *full_path_cmd;
+	char *full_path_cmd = NULL;
 	
 
 	for (i = 0; i < nb_cmds; i++)
@@ -25,7 +25,11 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 		}
 		*status = 0;
 		if ((builtin_flag == 0) && (_which(prog_name, *env, cmd_list[i].args, status, &full_path_cmd) == 0))
+		{
 			execute_command(cmd_list, i, nb_cmds, env, full_path_cmd);
+			if (full_path_cmd)
+				free(full_path_cmd);
+		}
 
 		if (cmd_list[i].op != NONE)
 			do_revert_redirection(&cmd_list[i], std_fd_save);
