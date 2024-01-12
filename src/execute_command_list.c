@@ -158,6 +158,8 @@ int _which(char *prog_name, char **env, char **args, int *status, char **full_pa
 	char *path = _getenv("PATH", env), *copyenv, *cmdpath, *token, *envNULL;
 	int lenarg, lentok;
 
+	full_path_cmd = __strdup(args[0]);
+
 	if (_strchr(args[0], '/'))
 		return (0);
 	if (path)
@@ -177,6 +179,7 @@ int _which(char *prog_name, char **env, char **args, int *status, char **full_pa
 			cmdpath = _strcat(cmdpath, args[0]);
 			if ((access(cmdpath, F_OK) == 0))
 			{
+				free(full_path_cmd);
 				*full_path_cmd = _strdup(cmdpath);
 				free(cmdpath);
 				free(copyenv);
