@@ -123,6 +123,16 @@ int is_builtin(char *prog_name, char ***env, char **args,
 		do_env(*env);
 		return (1);
 	}
+	if (_strcmp(args[0], "setenv") == 0)
+	{
+		do_setenv(env, args, nb_args);
+		return (1);
+	}
+	if (_strcmp(args[0], "unsetenv") == 0)
+	{
+		do_unsetenv(env, args, nb_args);
+		return (1);
+	}
 	else if (_strcmp(args[0], "exit") == 0)
 	{
 		do_exit(prog_name, args, nb_args, status);

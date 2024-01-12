@@ -18,6 +18,7 @@ int _strcmp(const char *s1, const char *s2);
 int _strncmp(const char *s1, const char *s2, size_t n);
 char *_getenv(const char *name, char **env);
 int _setenv(const char *name, const char *value, int overwrite, char ***env);
+int _unsetenv(const char *name, char ***env);
 int add_env_var(const char *name, const char *value,
 				char ***env, int env_size);
 int update_env_var(const char *name, const char *value, char ***env);

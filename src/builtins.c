@@ -1,23 +1,6 @@
 #include "main.h"
 
 /**
- * do_env - Prints all environment variables and their contents.
- * @env: Array of strings representing the environment variables.
- * Description: Iterates through the array of environment variables and
- * prints each one to the standard output.
- */
-void do_env(char **env)
-{
-	int i = 0;
-
-	while (env[i] != NULL)
-	{
-		printf("%s\n", env[i]);
-		i++;
-	}
-}
-
-/**
  * do_exit - Checks if 'exit' command is valid and updates exit code.
  * @prog_name: Name of the program.
  * @args: Array of strings representing the arguments passed to the program.

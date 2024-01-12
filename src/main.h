@@ -61,7 +61,11 @@ typedef struct
 
 int is_builtin(char *prog_name, char ***env, char **args,
 			   int nb_args, int *status);
+
 void do_env(char **env);
+void do_setenv(char ***env, char **args, int nb_args);
+void do_unsetenv(char ***env, char **args, int nb_args);
+
 void do_exit(char *prog_name, char **args, int nb_args, int *status);
 void print_error_message(char *prog_name, char *cmd, char *arg, int status);
 int do_cd(char *prog_name, char ***env, char **args, int nb_args, int *status);
