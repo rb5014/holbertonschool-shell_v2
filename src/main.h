@@ -14,7 +14,7 @@
 
 #include "custom_std_functions/custom_std_functions.h"
 
-typedef enum
+typedef enum operator
 {
 	NONE,
 	TO_FILE,
@@ -23,6 +23,13 @@ typedef enum
 	HERE_DOCUMENT,
 	PIPE
 } operator;
+
+typedef enum logical_operator
+{
+	LOGICAL_NONE,
+	AND,
+	OR
+} logical_operator;
 
 typedef enum
 {
@@ -49,6 +56,7 @@ typedef struct
 	int is_part_of_pipe;
 	int prev_was_pipe;
 	position_in_pipe pos_in_pipe;
+	logical_operator l_op;
 } command;
 
 int is_builtin(char *prog_name, char ***env, char **args,
@@ -74,7 +82,7 @@ char **resize_arg_list(char **arg_list, int *old_size);
 
 int gen_command_list(command **cmd_list, char **args, int nb_args);
 command *resize_cmd_list(command *cmd_list, int *old_size);
-void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir, int is_part_of_pipe, position_in_pipe pos_in_pipe);
+void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir, int is_part_of_pipe, position_in_pipe pos_in_pipe, logical_operator l_op);
 
 char *_which(char *prog_name, char **env, char **args, int *status);
 void free_loop(char **args, int nb_args);

@@ -17,34 +17,35 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 			if (std_fd_save == -1)
 				return;
 		}
+		*status = 0;
 		builtin_flag = is_builtin(prog_name, env, cmd_list[i].args, cmd_list[i].nb_args, status);
 		if (builtin_flag == -1)
 		{
 			*exit_flag = builtin_flag;
 			break;
 		}
-		*status = 0;
 		if ((builtin_flag == 0) && (full_path_cmd = _which(prog_name, *env, cmd_list[i].args, status)))
 		{
 			execute_command(cmd_list, i, nb_cmds, env, full_path_cmd);
 			free(full_path_cmd);
+			if (i > 0)
+			{
+				if (cmd_list[i - 1].pipe_fd[0] != -1) {
+					close(cmd_list[i - 1].pipe_fd[0]);
+				}
+				if (cmd_list[i - 1].pipe_fd[1] != -1) {
+					close(cmd_list[i - 1].pipe_fd[1]);
+				}
+			}
+			wait(&wstatus);
+			*status = WEXITSTATUS(wstatus);
 		}
-
 		if (cmd_list[i].op != NONE)
 			do_revert_redirection(&cmd_list[i], std_fd_save);
 
+		if (*status && (cmd_list[i].l_op == AND))
+			break;
 	}
-
-	/* Parent closes all pipe file descriptors */
-	close_all_pipes(cmd_list, nb_cmds);
-
-    /* Wait for all child processes to finish */
-    for (i = 0; i < nb_cmds; i++)
-	{
-		wait(&wstatus);
-    }
-	if ((builtin_flag == 0) && (*status == 0))
-		*status = WEXITSTATUS(wstatus);
 }
 
 void execute_command(command *cmd_list, int i, int nb_cmds, char ***env, char *full_path_cmd)

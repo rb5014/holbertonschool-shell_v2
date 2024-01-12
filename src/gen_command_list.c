@@ -11,6 +11,7 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 	position_in_pipe pos_in_pipe = PIPE_NONE;
 
 	operator op = NONE;
+	logical_operator l_op = LOGICAL_NONE;
 
 	/* The order is very important, because otherwise _strstr will find the wrong substring */
 	/* For example if it checks ">" before ">>", the result will succeed even if op is ">>" */
@@ -34,23 +35,36 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 				pos_in_pipe = PIPE_MIDDLE;
 			else
 				pos_in_pipe = PIPE_START;
-			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe);
+			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe, l_op);
 			prev_was_pipe = 1;
 
 			/* Reset for following cmd */
-			op = NONE; 
+			op = NONE;
+			l_op = LOGICAL_NONE;
 			current_cmd = NULL;
 			nb_args_current_cmd = 0;
 			file_for_redir = NULL;
 		}
 		else if (_strcmp(args[i], ";") == 0)
 		{
-			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe);
+			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe, l_op);
 			/* Reset for following cmd */
+			op = NONE; 
+			l_op = LOGICAL_NONE;
+			current_cmd = NULL;
+			nb_args_current_cmd = 0;
+			file_for_redir = NULL;
+		}
+		else if (_strcmp(args[i], "&&") == 0)
+		{
+			l_op = AND;
+			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe, l_op);
+			l_op = LOGICAL_NONE;
 			op = NONE; 
 			current_cmd = NULL;
 			nb_args_current_cmd = 0;
 			file_for_redir = NULL;
+
 		}
 		else
 		{
@@ -77,7 +91,7 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 	}
 	/* Add last command (or the only command in the line) */
 	if (nb_args > 0)
-		add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe);
+		add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe, l_op);
 
 	return (nb_cmds);
 }
@@ -98,7 +112,7 @@ command *resize_cmd_list(command *cmd_list, int *old_size)
 	return (new_cmd_list);
 }
 
-void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir, int is_part_of_pipe, position_in_pipe pos_in_pipe)
+void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir, int is_part_of_pipe, position_in_pipe pos_in_pipe, logical_operator l_op)
 {
 	*cmd_list = resize_cmd_list(*cmd_list, nb_cmds);
 
@@ -122,6 +136,7 @@ void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args,
 
 	(*cmd_list)[*nb_cmds - 1].is_part_of_pipe = is_part_of_pipe;
 	(*cmd_list)[*nb_cmds - 1].pos_in_pipe = pos_in_pipe;
+	(*cmd_list)[*nb_cmds - 1].l_op = l_op;
 
 }
 
