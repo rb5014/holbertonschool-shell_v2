@@ -184,7 +184,10 @@ char *_which(char *prog_name, char **env, char **args, int *status)
 		free(cmdpath);
 		free(copyenv);
 	}
-	*status = 127;
-	print_error_message(prog_name, args[0], NULL, *status);
+	if (!full_path_cmd)
+	{
+		*status = 127;
+		print_error_message(prog_name, args[0], NULL, *status);
+	}
 	return (full_path_cmd);
 }
