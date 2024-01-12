@@ -45,7 +45,8 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 
 		if (*status && (cmd_list[i].l_op == AND))
 			break;
-
+		if ((*status == 0) && (cmd_list[i].l_op == OR))
+			break;
 	}
 
 }

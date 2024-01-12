@@ -64,7 +64,16 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 			current_cmd = NULL;
 			nb_args_current_cmd = 0;
 			file_for_redir = NULL;
-
+		}
+		else if (_strcmp(args[i], "||") == 0)
+		{
+			l_op = OR;
+			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe, l_op);
+			l_op = LOGICAL_NONE;
+			op = NONE; 
+			current_cmd = NULL;
+			nb_args_current_cmd = 0;
+			file_for_redir = NULL;
 		}
 		else
 		{
