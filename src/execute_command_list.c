@@ -24,14 +24,10 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 			break;
 		}
 		*status = 0;
-		if ((builtin_flag == 0) && (_which(prog_name, *env, cmd_list[i].args, status, &full_path_cmd) == 0))
+		if ((builtin_flag == 0) && (full_path_cmd = _which(prog_name, *env, cmd_list[i].args, status)))
 		{
-			if (full_path_cmd)
-			{
-				execute_command(cmd_list, i, nb_cmds, env, full_path_cmd);
-				free(full_path_cmd);
-				full_path_cmd = NULL;
-			}
+			execute_command(cmd_list, i, nb_cmds, env, full_path_cmd);
+			free(full_path_cmd);
 		}
 
 		if (cmd_list[i].op != NONE)
@@ -153,15 +149,12 @@ int is_builtin(char *prog_name, char ***env, char **args,
  * Return: 0 if the command is found in the PATH,
  *         -1 if not found or an error occurs.
  */
-int _which(char *prog_name, char **env, char **args, int *status, char **full_path_cmd)
+char *_which(char *prog_name, char **env, char **args, int *status)
 {
 	char *path = _getenv("PATH", env), *copyenv, *cmdpath, *token, *envNULL;
 	int lenarg, lentok;
+	char *full_path_cmd = NULL;
 
-	*full_path_cmd = _strdup(args[0]);
-
-	if (_strchr(args[0], '/'))
-		return (0);
 	if (path)
 	{
 		copyenv = _strdup(path);
@@ -176,14 +169,16 @@ int _which(char *prog_name, char **env, char **args, int *status, char **full_pa
 			cmdpath = _calloc((lentok + lenarg + 2), sizeof(char));
 			cmdpath = _strcpy(cmdpath, token);
 			cmdpath = _strcat(cmdpath, "/");
+			if ((access(args[0], F_OK) == 0) && _strstr(args[0], token))
+			{
+				full_path_cmd = _strdup(args[0]);
+				break;
+			}
 			cmdpath = _strcat(cmdpath, args[0]);
 			if ((access(cmdpath, F_OK) == 0))
 			{
-				free(*full_path_cmd);
-				*full_path_cmd = _strdup(cmdpath);
-				free(cmdpath);
-				free(copyenv);
-				return (0);
+				full_path_cmd = _strdup(cmdpath);
+				break;
 			}
 		}
 		free(cmdpath);
@@ -191,5 +186,5 @@ int _which(char *prog_name, char **env, char **args, int *status, char **full_pa
 	}
 	*status = 127;
 	print_error_message(prog_name, args[0], NULL, *status);
-	return (-1);
+	return (full_path_cmd);
 }

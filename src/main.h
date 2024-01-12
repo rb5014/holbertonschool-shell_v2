@@ -76,7 +76,7 @@ int gen_command_list(command **cmd_list, char **args, int nb_args);
 command *resize_cmd_list(command *cmd_list, int *old_size);
 void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir, int is_part_of_pipe, position_in_pipe pos_in_pipe);
 
-int _which(char *prog_name, char **env, char **args, int *status, char **full_path_cmd);
+char *_which(char *prog_name, char **env, char **args, int *status);
 void free_loop(char **args, int nb_args);
 void free_commands(command **cmd_list, int nb_cmds);
 void SIGINT_handler(int signum);
