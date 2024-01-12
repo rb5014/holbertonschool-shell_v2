@@ -155,11 +155,10 @@ char *_which(char *prog_name, char **env, char **args, int *status)
 	int lenarg, lentok;
 	char *full_path_cmd = NULL;
 
-
+	if (_strchr(args[0], '/'))
+		return (_strdup(args[0]));
 	if (path)
 	{
-		if ((access(args[0], F_OK) == 0))
-			return (_strdup(args[0]));
 		copyenv = _strdup(path);
 		lenarg = _strlen(args[0]);
 		cmdpath = _strdup(args[0]);
