@@ -4,6 +4,8 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 {
 	int i, wstatus = 0, builtin_flag = 0;
 	int std_fd_save = -1;
+	char *full_path_cmd;
+	
 
 	for (i = 0; i < nb_cmds; i++)
 	{
@@ -22,8 +24,8 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 			break;
 		}
 		*status = 0;
-		if ((builtin_flag == 0) && (_which(prog_name, *env, cmd_list[i].args, status) == 0))
-			execute_command(cmd_list, i, nb_cmds, env);
+		if ((builtin_flag == 0) && (_which(prog_name, *env, cmd_list[i].args, status, &full_path_cmd) == 0))
+			execute_command(cmd_list, i, nb_cmds, env, full_path_cmd);
 
 		if (cmd_list[i].op != NONE)
 			do_revert_redirection(&cmd_list[i], std_fd_save);
@@ -42,7 +44,7 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 		*status = WEXITSTATUS(wstatus);
 }
 
-void execute_command(command *cmd_list, int i, int nb_cmds, char ***env)
+void execute_command(command *cmd_list, int i, int nb_cmds, char ***env, char *full_path_cmd)
 {
 	pid_t pid = fork();
 
@@ -67,7 +69,7 @@ void execute_command(command *cmd_list, int i, int nb_cmds, char ***env)
     	close_all_pipes(cmd_list, nb_cmds);
 
 		/* Execute the command */
-		if (execve(cmd_list[i].args[0], cmd_list[i].args, *env) == -1)
+		if (execve(full_path_cmd, cmd_list[i].args, *env) == -1)
 		{
 			perror("./shell");
 		}
@@ -144,7 +146,7 @@ int is_builtin(char *prog_name, char ***env, char **args,
  * Return: 0 if the command is found in the PATH,
  *         -1 if not found or an error occurs.
  */
-int _which(char *prog_name, char **env, char **args, int *status)
+int _which(char *prog_name, char **env, char **args, int *status, char **full_path_cmd)
 {
 	char *path = _getenv("PATH", env), *copyenv, *cmdpath, *token, *envNULL;
 	int lenarg, lentok;
@@ -168,8 +170,7 @@ int _which(char *prog_name, char **env, char **args, int *status)
 			cmdpath = _strcat(cmdpath, args[0]);
 			if ((access(cmdpath, F_OK) == 0))
 			{
-				free(args[0]);
-				args[0] = _strdup(cmdpath);
+				*full_path_cmd = _strdup(cmdpath);
 				free(cmdpath);
 				free(copyenv);
 				return (0);

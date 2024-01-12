@@ -76,10 +76,7 @@ int gen_command_list(command **cmd_list, char **args, int nb_args);
 command *resize_cmd_list(command *cmd_list, int *old_size);
 void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir, int is_part_of_pipe, position_in_pipe pos_in_pipe);
 
-void do_cmd(char *prog_name, char ***env, int *status, command *cmd, int *exit_flag);
-void do_piped_cmd(char *prog_name, char ***env, int *status, command *cmd, int *exit_flag);
-int _which(char *prog_name, char **env, char **args, int *status);
-void fork_wait_execve(char ***env, char **p, int *status);
+int _which(char *prog_name, char **env, char **args, int *status, char **full_path_cmd);
 void free_loop(char **args, int nb_args);
 void free_commands(command **cmd_list, int nb_cmds);
 void SIGINT_handler(int signum);
@@ -90,6 +87,6 @@ int stdout_to_file(command *cmd, int is_append);
 int stdin_from_file(command *cmd, int *status);
 int gen_temp_heredoc_file(command *cmd);
 void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char ***env, int *status, int *exit_flag);
-void execute_command(command *cmd_list, int i, int nb_cmds, char ***env);
+void execute_command(command *cmd_list, int i, int nb_cmds, char ***env, char *full_path_cmd);
 void close_all_pipes(command *cmd_list, int nb_cmds);
 #endif
