@@ -9,9 +9,10 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 
 	for (i = 0; i < nb_cmds; i++)
 	{
+		print_cmd_struct(cmd_list[i]);
 		if (cmd_list[i].nb_args == 0)
 			break;
-		if (cmd_list[i].op != NONE)
+		if (cmd_list[i].file_op != NONE)
 		{
 			std_fd_save = do_redirection(&cmd_list[i], status);
 			if (std_fd_save == -1)
@@ -40,12 +41,12 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 			wait(&wstatus);
 			*status = WEXITSTATUS(wstatus);
 		}
-		if (cmd_list[i].op != NONE)
+		if (cmd_list[i].file_op != NONE)
 			do_revert_redirection(&cmd_list[i], std_fd_save);
 
-		if (*status && (cmd_list[i].l_op == AND))
+		if (*status && (cmd_list[i].logical_op == AND))
 			break;
-		if ((*status == 0) && (cmd_list[i].l_op == OR))
+		if ((*status == 0) && (cmd_list[i].logical_op == OR))
 			break;
 	}
 
@@ -56,18 +57,18 @@ void execute_command(command *cmd_list, int i, int nb_cmds, char ***env, char *f
 	pid_t pid = fork();
 
 	if (pid == 0) { /* Child process */
-		if (cmd_list[i].is_part_of_pipe)
+		if (cmd_list[i].pipe_op == PIPE)
 		{
 			int input_fd = (i == 0) ? -1 : cmd_list[i - 1].pipe_fd[0];
 			int is_last = (i == nb_cmds - 1);
 			int output_fd = is_last ? -1 : cmd_list[i].pipe_fd[1];
 
 			/* Setup input and output for the current command */
-			if (input_fd != -1 && (cmd_list[i].op != FROM_FILE) && (cmd_list[i].op != HERE_DOCUMENT))
+			if (input_fd != -1 && (cmd_list[i].file_op != FROM_FILE) && (cmd_list[i].file_op != HERE_DOCUMENT))
 			{
 				dup2(input_fd, STDIN_FILENO);
 			}
-			if ((output_fd != -1) && (cmd_list[i].op != TO_FILE) && (cmd_list[i].op != TO_FILE_APPEND))
+			if ((output_fd != -1) && (cmd_list[i].file_op != TO_FILE) && (cmd_list[i].file_op != TO_FILE_APPEND))
 			{
 				dup2(cmd_list[i].pipe_fd[1], STDOUT_FILENO);
 			}

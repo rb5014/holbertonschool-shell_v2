@@ -28,7 +28,8 @@ void free_commands(command **cmd_list, int nb_cmds)
 	for (i = 0; i < nb_cmds; i++)
 	{
 		free_loop((*cmd_list)[i].args, (*cmd_list)[i].nb_args);
-		free((*cmd_list)[i].file_for_redir);
+		if ((*cmd_list)[i].file_for_redir)
+			free((*cmd_list)[i].file_for_redir);
 	}
 	free(*cmd_list);
 }

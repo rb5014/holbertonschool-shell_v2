@@ -4,7 +4,7 @@ int do_redirection(command *cmd, int *status)
 {
 	int std_fd_save = -1;
 
-	switch ((*cmd).op)
+	switch ((*cmd).file_op)
 	{
 		case TO_FILE:
 			std_fd_save = dup(STDOUT_FILENO);
@@ -37,7 +37,7 @@ int do_redirection(command *cmd, int *status)
 
 void do_revert_redirection(command *cmd, int std_fd_save)
 {
-	switch ((*cmd).op)
+	switch ((*cmd).file_op)
 	{
 		case TO_FILE:
 		case TO_FILE_APPEND:

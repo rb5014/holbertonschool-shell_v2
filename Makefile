@@ -12,6 +12,9 @@ allc90: $(SOURCES)
 all_no_warnings: $(SOURCES)
 	$(CC) -g $(SOURCES) -o $(EXE)
 
+run: all
+	./$(EXE)
+	
 .PHONY: clean
 clean:
 	rm -f ./$(EXE)

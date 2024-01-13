@@ -38,6 +38,8 @@ int populate_args(char *line, char ***args)
 {
 	char *delim = " \n", *linetoNULL = line, *token = NULL;
 	int nb_args = 0;
+	/* The order is very important, because otherwise _strstr will find the wrong substring */
+	/* For example if it checks ">" before ">>", the result will succeed even if op is ">>" */
 	char *operators[] = {">>", ">", "<<", "<", "||", "|", ";", "&&", NULL};
 	char **separated_token = NULL;
 	int nb_sep_token = 0, i, j;

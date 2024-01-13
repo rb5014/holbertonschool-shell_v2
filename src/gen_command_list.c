@@ -2,107 +2,100 @@
 
 int gen_command_list(command **cmd_list, char **args, int nb_args)
 {
-	int i = 0;
-	int nb_cmds = 0;
-	char **current_cmd = NULL;
-	int nb_args_current_cmd = 0;
-	char *file_for_redir = NULL;
-	int is_part_of_pipe = 0, prev_was_pipe = 0;
-	position_in_pipe pos_in_pipe = PIPE_NONE;
+	int i, nb_cmds = 0;
+	command current_cmd = generate_new_command_struct();
 
-	operator op = NONE;
-	logical_operator l_op = LOGICAL_NONE;
-
-	/* The order is very important, because otherwise _strstr will find the wrong substring */
-	/* For example if it checks ">" before ">>", the result will succeed even if op is ">>" */
-	op_str_to_enum_value conv[] = {{">>", TO_FILE_APPEND}, {">", TO_FILE},
-	{"<<", HERE_DOCUMENT}, {"<", FROM_FILE}, {NULL, NONE}};
-
+	if (nb_args == 0)
+		return (0);
+	
 	for (i = 0; i < nb_args; i++)
 	{
-		int j;
-
-		is_part_of_pipe = 0;
-		if (prev_was_pipe)
+		operator op = is_operator(args[i]);
+		if (op == NONE)
+			add_new_arg(&current_cmd.args, args[i], &current_cmd.nb_args);
+		else if ((op == PIPE) || (op == AND) || (op == OR) || (op == SEMICOLON))
 		{
-			is_part_of_pipe = 1;
-			pos_in_pipe = PIPE_END;
-		}
-		if (_strcmp(args[i], "|") == 0)
-		{
-			is_part_of_pipe = 1;
-			if (prev_was_pipe)
-				pos_in_pipe = PIPE_MIDDLE;
-			else
-				pos_in_pipe = PIPE_START;
-			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe, l_op);
-			prev_was_pipe = 1;
-
-			/* Reset for following cmd */
-			op = NONE;
-			l_op = LOGICAL_NONE;
-			current_cmd = NULL;
-			nb_args_current_cmd = 0;
-			file_for_redir = NULL;
-		}
-		else if (_strcmp(args[i], ";") == 0)
-		{
-			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe, l_op);
-			/* Reset for following cmd */
-			op = NONE; 
-			l_op = LOGICAL_NONE;
-			current_cmd = NULL;
-			nb_args_current_cmd = 0;
-			file_for_redir = NULL;
-		}
-		else if (_strcmp(args[i], "&&") == 0)
-		{
-			l_op = AND;
-			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe, l_op);
-			l_op = LOGICAL_NONE;
-			op = NONE; 
-			current_cmd = NULL;
-			nb_args_current_cmd = 0;
-			file_for_redir = NULL;
-		}
-		else if (_strcmp(args[i], "||") == 0)
-		{
-			l_op = OR;
-			add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe, l_op);
-			l_op = LOGICAL_NONE;
-			op = NONE; 
-			current_cmd = NULL;
-			nb_args_current_cmd = 0;
-			file_for_redir = NULL;
-		}
-		else
-		{
-			for (j = 0; conv[j].op_str != NULL; j++)
+			add_new_command(cmd_list, &nb_cmds, current_cmd, op);
+			current_cmd = generate_new_command_struct();
+			if (op == PIPE)
 			{
-				if (_strcmp(args[i], conv[j].op_str) == 0)
-				{
-					op = conv[j].op_enum_value;
-					if ((i + 1) < nb_args)
-					{
-						i++;
-						file_for_redir = _strdup(args[i]);
-					}
-					break;
-				}
+				current_cmd.pipe_op = PIPE;
+				current_cmd.pos_in_pipe = PIPE_END;
 			}
-			if (conv[j].op_str == NULL) /* If no op was found in this current iteration of the args loop */
-			{
-				add_new_arg(&current_cmd, args[i], &nb_args_current_cmd);
-			}
-
 		}
-
+		else if ((op == TO_FILE) || (op == TO_FILE_APPEND) || (op == FROM_FILE) || (op == HERE_DOCUMENT))
+		{
+			current_cmd.file_op = op;
+			if ((i + 1) < nb_args)
+			{
+				i++;
+				current_cmd.file_for_redir = _strdup(args[i]);
+			}
+		}
 	}
 	/* Add last command (or the only command in the line) */
 	if (nb_args > 0)
-		add_new_command(cmd_list, &nb_cmds, current_cmd, nb_args_current_cmd, op, file_for_redir, is_part_of_pipe, pos_in_pipe, l_op);
-
+		add_new_command(cmd_list, &nb_cmds, current_cmd, NONE);
 	return (nb_cmds);
+}
+
+command generate_new_command_struct(void)
+{
+	command cmd =
+	{
+		NULL, /* args */
+		0, /* nb_args */
+		NONE, /* file_op */
+		NONE, /* logical_op */
+		NONE, /* pipe_op */
+		NULL, /* file_for_redir */
+		-1, /* fd */
+ 		{-1, -1}, /* pipe_fd[2] */
+		PIPE_NONE /* pos_in_pipe */
+	};
+	return (cmd);
+}
+
+void print_cmd_struct(command cmd)
+{
+	int i;
+
+	printf("args:");
+	for (i = 0; i < cmd.nb_args; i++)
+	{
+		printf(" %s", cmd.args[i]);
+	}
+	puts("");
+	printf("nb_args: %i\n", cmd.nb_args);
+	printf("file_op: %i\n", cmd.file_op);
+	printf("logical_op: %i\n", cmd.logical_op);
+	if (cmd.file_for_redir)
+		printf("file_for_redir: %s\n", cmd.file_for_redir);
+	else
+		printf("file_for_redir: ");
+	printf("fd: %i\n", cmd.fd);
+	printf("pipe_op: %i\n", cmd.pipe_op);
+	printf("pipe_fd[0]: %i\n", cmd.pipe_fd[0]);
+	printf("pipe_fd[1]: %i\n", cmd.pipe_fd[1]);
+	printf("pos_in_pipe: %i\n", cmd.pos_in_pipe);
+	puts("");
+}
+
+operator is_operator(char *arg)
+{
+	op_str_to_enum_value conv[] = {{">>", TO_FILE_APPEND}, {">", TO_FILE},
+	{"<<", HERE_DOCUMENT}, {"<", FROM_FILE}, {"&&", AND}, {"||", OR},
+	{"|", PIPE}, {";", SEMICOLON}, {NULL, NONE}};
+
+	int i;
+
+	for (i = 0; conv[i].op_str!= NULL; i++)
+	{
+		if (_strcmp(arg, conv[i].op_str) == 0)
+			break;
+	}
+	return (conv[i].op_enum_value);
+	
 }
 
 command *resize_cmd_list(command *cmd_list, int *old_size)
@@ -121,32 +114,29 @@ command *resize_cmd_list(command *cmd_list, int *old_size)
 	return (new_cmd_list);
 }
 
-void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir, int is_part_of_pipe, position_in_pipe pos_in_pipe, logical_operator l_op)
+void add_new_command(command **cmd_list, int *nb_cmds, command cmd, operator op) 
 {
 	*cmd_list = resize_cmd_list(*cmd_list, nb_cmds);
 
-	(*cmd_list)[*nb_cmds - 1].args = args;
-	(*cmd_list)[*nb_cmds - 1].nb_args = nb_args;
-	(*cmd_list)[*nb_cmds - 1].op = op;
-	if (file_for_redir != NULL)
-		(*cmd_list)[*nb_cmds - 1].file_for_redir = file_for_redir;
-	else
-		(*cmd_list)[*nb_cmds - 1].file_for_redir = _strdup("");
-
-	(*cmd_list)[*nb_cmds - 1].fd = -1;
-
-	if (is_part_of_pipe == 1)
-		pipe((*cmd_list)[*nb_cmds - 1].pipe_fd);
-	else
+	if (op == PIPE)
 	{
-		(*cmd_list)[*nb_cmds - 1].pipe_fd[0] = -1;
-		(*cmd_list)[*nb_cmds - 1].pipe_fd[1] = -1;
+		if (cmd.pipe_op == NONE)
+			{
+				cmd.pipe_op = PIPE;
+				cmd.pos_in_pipe = PIPE_START;
+			}
+		else if (cmd.pipe_op == PIPE) /* Previously assigned to PIPE_END */
+			cmd.pos_in_pipe = PIPE_MIDDLE;
+	
 	}
+	else if ((op == AND) || (op == OR))
+		cmd.logical_op = op;
 
-	(*cmd_list)[*nb_cmds - 1].is_part_of_pipe = is_part_of_pipe;
-	(*cmd_list)[*nb_cmds - 1].pos_in_pipe = pos_in_pipe;
-	(*cmd_list)[*nb_cmds - 1].l_op = l_op;
 
+	/* Separated because for the PIPE_END, param 'op' will not be PIPE */
+	/* but cmd.pipe_op assigned to PIPE for next cmd in gen_cmd_list function */
+	if (cmd.pipe_op == PIPE)
+		pipe(cmd.pipe_fd);
+
+	(*cmd_list)[*nb_cmds - 1] = cmd;
 }
-
-

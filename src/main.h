@@ -21,15 +21,12 @@ typedef enum operator
 	TO_FILE_APPEND,
 	FROM_FILE,
 	HERE_DOCUMENT,
-	PIPE
+	PIPE,
+	AND,
+	OR,
+	SEMICOLON
 } operator;
 
-typedef enum logical_operator
-{
-	LOGICAL_NONE,
-	AND,
-	OR
-} logical_operator;
 
 typedef enum
 {
@@ -49,14 +46,13 @@ typedef struct
 {
 	char **args;
 	int nb_args;
-	operator op;
+	operator file_op;
+	operator logical_op;
+	operator pipe_op;
 	char *file_for_redir;
 	int fd;
 	int pipe_fd[2];
-	int is_part_of_pipe;
-	int prev_was_pipe;
 	position_in_pipe pos_in_pipe;
-	logical_operator l_op;
 } command;
 
 int is_builtin(char *prog_name, char ***env, char **args,
@@ -85,8 +81,11 @@ void add_new_arg(char ***arg_list, char *arg, int *nb_args);
 char **resize_arg_list(char **arg_list, int *old_size);
 
 int gen_command_list(command **cmd_list, char **args, int nb_args);
+operator is_operator(char *arg);
 command *resize_cmd_list(command *cmd_list, int *old_size);
-void add_new_command(command **cmd_list, int *nb_cmds, char **args, int nb_args, operator op, char *file_for_redir, int is_part_of_pipe, position_in_pipe pos_in_pipe, logical_operator l_op);
+void add_new_command(command **cmd_list, int *nb_cmds, command cmd, operator op);
+command generate_new_command_struct(void);
+void print_cmd_struct(command cmd);
 
 char *_which(char *prog_name, char **env, char **args, int *status);
 void free_loop(char **args, int nb_args);
