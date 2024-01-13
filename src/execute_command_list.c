@@ -9,7 +9,6 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char 
 
 	for (i = 0; i < nb_cmds; i++)
 	{
-		print_cmd_struct(cmd_list[i]);
 		if (cmd_list[i].nb_args == 0)
 			break;
 		if (cmd_list[i].file_op != NONE)
