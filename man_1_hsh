@@ -1,35 +1,207 @@
-q.TH "HSH" 1 "January 14, 2024"
+.TH "HSH" 1 "January 14, 2024"
 .SH NAME
 hsh \- Holberton School Shell
+A simple UNIX command-line interpreter.
 
 .SH SYNOPSIS
 .B hsh
 [\fIOPTION\fR]... [\fICOMMAND\fR] [ARGUMENTS]...
 
 .SH DESCRIPTION
-This manual page documents the Holberton School Shell (hsh).
+This is a simple UNIX command-line interpreter developed as a project for Holberton School.
+.br
+The program starts a loop to read input lines, parses them and execute commands if any.
 
-.SH OPTIONS
-The shell supports the following options:
-.TP
-\fB-h\fR
-Display help information.
+.SH FEATURES
+
+.IP "Basic command execution"
+.IP "Built-in commands:"
+  \fBexit\fR: Exit the shell with an optional status.
+  \fBcd\fR: Change the current working directory.
+  \fBenv\fR: Display the current environment variables.
+  \fBsetenv\fR: Initialize or modify an environment variable.
+  \fBunsetenv\fR: Remove an environment variable.
+
+.IP "Redirections:"
+  \fB>\fR: Right stream redirection for output.
+  \fB>>\fR: Double right stream redirection for appending output.
+  \fB<\fR: Left stream redirection for input.
+  \fB<<\fR: Double left stream redirection (heredoc) for multiline input.
+
+.IP "Pipelines:"
+  \fB|\fR: Pipe stream redirection to connect the output of one command to the input of another.
+
+.IP "Logical operators:"
+  \fB&&\fR: Logical AND, execute the right command only if the left command succeeds.
+  \fB||\fR: Logical OR, execute the right command only if the left command fails.
+
+.IP "Command separators:"
+  \fB;\fR: Separates multiple commands on a single line, allowing sequential execution.
+
+.IP "Additional Functionality:"
+  Environment variable updates using \fBsetenv\fR and \fBunsetenv\fR.
+
 
 .SH EXAMPLES
-Run the shell:
-.B ./hsh
-.TP
-Run a command:
-.B ./hsh -c "ls -l"
-.TP
-Execute a script:
-.B ./hsh script.sh
-.TP
-Use redirection:
-.B ./hsh -c "echo Hello > output.txt"
 
-.SH AUTHORS
-See the AUTHORS.md file for a list of contributors.
+.IP "Basic Command Execution"
+.IP "Run the shell and execute a basic command:"
+.IP
+.B
+user1@~$ ./hsh
+.br
+ls -l
+.br
+-rwxrwxr-x 1 user user 16528 Jan 14 00:00 hsh
+.br
+exit
+.br
+.B
+user1@~$
 
-.SH BUGS
-Report any bugs or issues at https://github.com/your_username/holbertonschool-shell_v2/issues
+.IP "Built-in Commands"
+.IP
+.B
+user1@~$ ./hsh
+.br
+cd /
+.br
+pwd
+.br
+/
+.br
+env
+.br
+SHELL=/bin/bash
+.br
+LC_ALL=en_US.UTF-8
+.br
+setenv MY_VARIABLE my_value
+.br
+env
+.br
+SHELL=/bin/bash
+.br
+LC_ALL=en_US.UTF-8
+.br
+MY_VARIABLE=my_value
+.br
+unsetenv MY_VARIABLE
+.br
+env
+.br
+SHELL=/bin/bash
+.br
+LC_ALL=en_US.UTF-8
+.br
+exit
+.br
+.B
+user1@~$
+
+.IP "Redirections"
+.IP
+.B
+user1@~$ ./hsh
+.br
+echo "Hello, World!" > output.txt
+.br
+cat output.txt
+.br
+"Hello, World!"
+.br
+echo "Hello, World!" >> output.txt
+.br
+cat output.txt
+.br
+"Hello, World!"
+.br
+"Hello, World!"
+.br
+rev < output.txt
+.br
+"!dlroW ,olleH"
+.br
+"!dlroW ,olleH"
+.br
+cat << END
+.br
+This is a heredoc.
+.br
+Multiple lines of text.
+.br
+END
+.br
+This is a heredoc.
+.br
+Multiple lines of text.
+.br
+exit
+.br
+.B
+user1@~$
+
+.IP "Pipelines"
+.IP
+.B
+user1@~$ ./hsh
+.br
+ls /var | grep log
+.br
+syslog
+.br
+exit
+.br
+.B
+user1@~$
+
+.IP "Logical Operators"
+.IP
+.B
+user1@~$ ./hsh
+.br
+ls /var && ls /var
+.br
+backups  cache  devcontainer  lib  local  lock  log  mail  opt  run  spool  tmp
+.br
+backups  cache  devcontainer  lib  local  lock  log  mail  opt  run  spool  tmp
+.br
+ls /hbtn && ls /var
+.br
+ls: cannot access /hbtn: No such file or directory
+.br
+ls /var || ls /var
+.br
+backups  cache  devcontainer  lib  local  lock  log  mail  opt  run  spool  tmp
+.br
+ls /hbtn || ls /var
+.br
+ls: cannot access /hbtn: No such file or directory
+.br
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+.br
+exit
+.br
+.B
+user1@~$
+
+.IP "Command Separators"
+.IP
+.B
+user1@~$
+ ./hsh
+.br
+ls /var ; ls /hbtn ; ls /var ; ls /var
+.br
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+.br
+ls: cannot access /hbtn: No such file or directory
+.br
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+.br
+backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
+.br
+exit
+.br
+.B
+user1@~$
