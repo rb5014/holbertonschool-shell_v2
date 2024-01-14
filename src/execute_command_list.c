@@ -19,18 +19,24 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name,
 					   cmd_list[i].nb_args, status, exit_flag) == 0)
 		{
 			full_path_cmd = _which(prog_name, *env, cmd_list[i].args, status);
-			execute_command(cmd_list, i, nb_cmds, env, full_path_cmd);
-			free(full_path_cmd);
-			if (i > 0)
+			if (full_path_cmd)
 			{
-				if (cmd_list[i - 1].pipe_fd[0] != -1)
-					close(cmd_list[i - 1].pipe_fd[0]);
-				if (cmd_list[i - 1].pipe_fd[1] != -1)
-					close(cmd_list[i - 1].pipe_fd[1]);
+				execute_command(cmd_list, i, nb_cmds, env, full_path_cmd);
+				free(full_path_cmd);
+				if (i > 0)
+				{
+					if (cmd_list[i - 1].pipe_fd[0] != -1)
+						close(cmd_list[i - 1].pipe_fd[0]);
+					if (cmd_list[i - 1].pipe_fd[1] != -1)
+						close(cmd_list[i - 1].pipe_fd[1]);
+				}
+				wait(&wstatus);
+				*status = WEXITSTATUS(wstatus);
 			}
-			wait(&wstatus);
-			*status = WEXITSTATUS(wstatus);
+
 		}
+		if (*exit_flag == -1)
+			break;
 		if (cmd_list[i].file_op != NONE)
 			do_revert_redirection(&cmd_list[i], std_fd_save);
 		if (*status && (cmd_list[i].logical_op == AND))
