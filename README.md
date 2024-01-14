@@ -14,12 +14,12 @@ Run the shell with the following command:
 ```
 
 ## Features
-. Basic command execution
-. Built-in commands: exit, cd, env, setenv, unsetenv
-. Redirections: >, >>, <
-. Pipes: |
-. Logical operators: &&, ||
-. Command separators: ;
+- Basic command execution
+- Built-in commands: exit, cd, env, setenv, unsetenv
+- Redirections: >, >>, <
+- Pipes: |
+- Logical operators: &&, ||
+- Command separators: ;
 
 ## Examples
 ```bash
