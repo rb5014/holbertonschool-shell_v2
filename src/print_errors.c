@@ -36,3 +36,32 @@ void print_error_message(char *prog_name, char *cmd, char *arg, int status)
 			break;
 	}
 }
+
+/**
+ * print_cmd_struct - Prints the contents of a command structure.
+ * @cmd: The command structure to be printed.
+ */
+void print_cmd_struct(command cmd)
+{
+	int i;
+
+	printf("args:");
+	for (i = 0; i < cmd.nb_args; i++)
+	{
+		printf(" %s", cmd.args[i]);
+	}
+	puts("");
+	printf("nb_args: %i\n", cmd.nb_args);
+	printf("file_op: %i\n", cmd.file_op);
+	printf("logical_op: %i\n", cmd.logical_op);
+	if (cmd.file_for_redir)
+		printf("file_for_redir: %s\n", cmd.file_for_redir);
+	else
+		printf("file_for_redir: ");
+	printf("fd: %i\n", cmd.fd);
+	printf("pipe_op: %i\n", cmd.pipe_op);
+	printf("pipe_fd[0]: %i\n", cmd.pipe_fd[0]);
+	printf("pipe_fd[1]: %i\n", cmd.pipe_fd[1]);
+	printf("pos_in_pipe: %i\n", cmd.pos_in_pipe);
+	puts("");
+}

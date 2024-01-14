@@ -18,12 +18,25 @@ void do_env(char **env)
 	}
 }
 
+/**
+ * do_setenv - Set or update an environment variable in the given environment.
+ * @env: Pointer to the environment.
+ * @args: Array of arguments containing variable name and value.
+ * @nb_args: Number of arguments provided.
+ */
 void do_setenv(char ***env, char **args, int nb_args)
 {
 	if (nb_args >= 3)
 		_setenv(args[1], args[2], 1, env);
 }
 
+/**
+ * do_unsetenv - Unset or remove an environment variable
+ * from the given environment.
+ * @env: Pointer to the environment.
+ * @args: Array of arguments containing the variable name to unset.
+ * @nb_args: Number of arguments provided.
+ */
 void do_unsetenv(char ***env, char **args, int nb_args)
 {
 		if (nb_args >= 2)

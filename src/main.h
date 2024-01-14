@@ -14,6 +14,18 @@
 
 #include "custom_std_functions/custom_std_functions.h"
 
+/**
+ * enum operator - Enumerates possible operators for command processing.
+ * @NONE: Represents no operation.
+ * @TO_FILE: Redirects output to a file.
+ * @TO_FILE_APPEND: Redirects and appends output to a file.
+ * @FROM_FILE: Redirects input from a file.
+ * @HERE_DOCUMENT: Redirects input from a here-document.
+ * @PIPE: Pipes output to another command.
+ * @AND: Represents the logical AND operator.
+ * @OR: Represents the logical OR operator.
+ * @SEMICOLON: Serves as a command separator.
+ */
 typedef enum operator
 {
 	NONE,
@@ -25,10 +37,18 @@ typedef enum operator
 	AND,
 	OR,
 	SEMICOLON
-} operator;
+}
+operator;
 
-
-typedef enum
+/**
+ * enum position_in_pipe - Enumerates positions within
+ * a pipe for command processing.
+ * @PIPE_NONE: No pipe operation.
+ * @PIPE_START: Start of a pipe.
+ * @PIPE_MIDDLE: Middle of a pipe.
+ * @PIPE_END: End of a pipe.
+ */
+typedef enum position_in_pipe
 {
 	PIPE_NONE,
 	PIPE_START,
@@ -36,13 +56,31 @@ typedef enum
 	PIPE_END
 } position_in_pipe;
 
-typedef struct
+/**
+ * struct op_str_to_enum_value - Maps operator strings to
+ * their corresponding enum values.
+ * @op_str: Operator string.
+ * @op_enum_value: Corresponding enum value.
+ */
+typedef struct op_str_to_enum_value
 {
 	char *op_str;
 	operator op_enum_value;
 } op_str_to_enum_value;
 
-typedef struct
+/**
+ * struct command - Represents a command with associated attributes.
+ * @args: Array of arguments.
+ * @nb_args: Number of arguments.
+ * @file_op: File operation type.
+ * @logical_op: Logical operation type.
+ * @pipe_op: Pipe operation type.
+ * @file_for_redir: File for redirection.
+ * @fd: File descriptor.
+ * @pipe_fd: Pipe file descriptors.
+ * @pos_in_pipe: Position in pipe.
+ */
+typedef struct command
 {
 	char **args;
 	int nb_args;
@@ -56,7 +94,7 @@ typedef struct
 } command;
 
 int is_builtin(char *prog_name, char ***env, char **args,
-			   int nb_args, int *status);
+			   int nb_args, int *status, int *exit_flag);
 
 void do_env(char **env);
 void do_setenv(char ***env, char **args, int nb_args);
@@ -83,7 +121,8 @@ char **resize_arg_list(char **arg_list, int *old_size);
 int gen_command_list(command **cmd_list, char **args, int nb_args);
 operator is_operator(char *arg);
 command *resize_cmd_list(command *cmd_list, int *old_size);
-void add_new_command(command **cmd_list, int *nb_cmds, command cmd, operator op);
+void add_new_command(command **cmd_list, int *nb_cmds,
+					 command cmd, operator op);
 command generate_new_command_struct(void);
 void print_cmd_struct(command cmd);
 
@@ -97,7 +136,9 @@ void do_revert_redirection(command *cmd, int std_fd_save);
 int stdout_to_file(command *cmd, int is_append);
 int stdin_from_file(command *cmd, int *status);
 int gen_temp_heredoc_file(command *cmd);
-void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name, char ***env, int *status, int *exit_flag);
-void execute_command(command *cmd_list, int i, int nb_cmds, char ***env, char *full_path_cmd);
+void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name,
+						  char ***env, int *status, int *exit_flag);
+void execute_command(command *cmd_list, int i, int nb_cmds, char ***env,
+					 char *full_path_cmd);
 void close_all_pipes(command *cmd_list, int nb_cmds);
 #endif

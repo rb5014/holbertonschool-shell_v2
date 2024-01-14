@@ -21,6 +21,11 @@ void free_loop(char **args, int nb_args)
 	free(args);
 }
 
+/**
+ * free_commands - Frees memory allocated for a command list.
+ * @cmd_list: Pointer to the command list.
+ * @nb_cmds: Number of commands in the list.
+ */
 void free_commands(command **cmd_list, int nb_cmds)
 {
 	int i;

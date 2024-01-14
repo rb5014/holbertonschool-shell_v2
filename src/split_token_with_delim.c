@@ -1,6 +1,6 @@
 #include "main.h"
 
-/*
+/**
  * split_token_with_delim - Splits a token by a given delimiter
  * @token: The token to be split
  * @delim: The delimiter to split the token by
@@ -15,7 +15,8 @@ char **split_token_with_delim(char *token, char *delim, int *nb_args)
 	if (found_op != NULL)
 	{
 		size_t index = found_op - token;
-		char **args = malloc(sizeof(char *) * 4); /* Allocate memory for arguments + NULL terminator */
+		/* Allocate memory for arguments + NULL terminator */
+		char **args = malloc(sizeof(char *) * 4);
 
 		if (index > 0)
 		{ /* Delimiter is not at the beginning */

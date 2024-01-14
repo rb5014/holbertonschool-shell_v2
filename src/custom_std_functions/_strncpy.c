@@ -1,12 +1,12 @@
 #include "custom_std_functions.h"
 
 /**
- * _strncpy - copies the string pointed to by src, including the null byte,
- * to the buffer pointed to by dest.
- * @dest: destination string.
- * @src: source string.
- *
- * Return: pointer to dest.
+ * _strncpy - Copies up to 'n' characters from the
+ * source string to the destination.
+ * @dest: Pointer to the destination buffer.
+ * @src: Pointer to the source string.
+ * @n: Maximum number of characters to copy.
+ * Return: Pointer to the destination buffer.
  */
 char *_strncpy(char *dest, const char *src, size_t n)
 {

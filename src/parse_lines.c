@@ -1,5 +1,11 @@
 #include "main.h"
 
+/**
+ * resize_arg_list - Resize the argument list by allocating additional space.
+ * @arg_list: Pointer to the argument list.
+ * @old_size: Pointer to the old size of the argument list.
+ * Return: Pointer to the resized argument list.
+ */
 char **resize_arg_list(char **arg_list, int *old_size)
 {
 	int new_size = (*old_size) + 1;
@@ -16,6 +22,12 @@ char **resize_arg_list(char **arg_list, int *old_size)
 	return (new_arg_list);
 }
 
+/**
+ * add_new_arg - Add a new argument to the argument list.
+ * @arg_list: Pointer to the argument list.
+ * @arg: New argument to be added.
+ * @nb_args: Pointer to the number of arguments.
+ */
 void add_new_arg(char ***arg_list, char *arg, int *nb_args)
 {
 	if ((arg == NULL) || (_strlen(arg) == 0))
@@ -26,7 +38,7 @@ void add_new_arg(char ***arg_list, char *arg, int *nb_args)
 	(*arg_list)[*nb_args] = NULL; /* Terminate the array */
 }
 
-/*
+/**
  * populate_args - Splits a line into arguments based on whitespace
  * and operators
  * @line: The line to be split
@@ -38,8 +50,10 @@ int populate_args(char *line, char ***args)
 {
 	char *delim = " \n", *linetoNULL = line, *token = NULL;
 	int nb_args = 0;
-	/* The order is very important, because otherwise _strstr will find the wrong substring */
-	/* For example if it checks ">" before ">>", the result will succeed even if op is ">>" */
+	/* The order is very important, */
+	/* because otherwise _strstr will find the wrong substring */
+	/* For example if it checks ">" before ">>", */
+	/* the result will succeed even if op is ">>" */
 	char *operators[] = {">>", ">", "<<", "<", "||", "|", ";", "&&", NULL};
 	char **separated_token = NULL;
 	int nb_sep_token = 0, i, j;
@@ -54,7 +68,8 @@ int populate_args(char *line, char ***args)
 		for (i = 0; operators[i] != NULL; i++)
 		{
 			nb_sep_token = 0;
-			separated_token = split_token_with_delim(token, operators[i], &nb_sep_token);
+			separated_token = split_token_with_delim(token, operators[i],
+													 &nb_sep_token);
 			for (j = 0; j < nb_sep_token; j++)
 			{
 				add_new_arg(args, separated_token[j], &nb_args);
@@ -91,10 +106,11 @@ void process_line(char *prog_name, char ***env, int *status,
 {
 	char **args = NULL;
 	int nb_args = 0, nb_cmds = 0;
-
 	command *cmd_list = NULL;
 
 	nb_args = populate_args(line, &args);
+	if (nb_args == 0)
+		return;
 
 	nb_cmds = gen_command_list(&cmd_list, args, nb_args);
 	free_loop(args, nb_args);

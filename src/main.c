@@ -1,6 +1,5 @@
 #include "main.h"
 
-
 /**
  * main - Entry point for a custom shell program.
  * @argc: The count of arguments passed to the program.
@@ -15,7 +14,6 @@ int main(int argc, char *argv[], char *envp[])
 	char **hsh_env = copy_envp(envp);
 	char *prog_name = NULL;
 	int status = 0;
-
 
 	if (argc)
 		prog_name = _strdup(argv[0]);
