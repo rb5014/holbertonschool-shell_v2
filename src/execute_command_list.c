@@ -33,7 +33,6 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name,
 				wait(&wstatus);
 				*status = WEXITSTATUS(wstatus);
 			}
-
 		}
 		if (*exit_flag == -1)
 			break;
