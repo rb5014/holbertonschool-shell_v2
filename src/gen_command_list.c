@@ -44,7 +44,7 @@ int gen_command_list(command **cmd_list, char **args, int nb_args)
 		}
 	}
 	/* Add last command (or the only command in the line) */
-	if (nb_args > 0)
+	if (current_cmd.nb_args > 0)
 		add_new_command(cmd_list, &nb_cmds, current_cmd, NONE);
 	return (nb_cmds);
 }

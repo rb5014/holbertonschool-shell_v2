@@ -97,6 +97,8 @@ int change_directory(char *prog_name, char **args, int nb_args, char *new_dir,
 		{
 			print_error_message(prog_name, args[0], args[1], *status);
 		}
+		else
+			*status = 0;
 	}
 	else
 	{

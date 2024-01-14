@@ -14,10 +14,10 @@ void execute_command_list(int nb_cmds, command *cmd_list, char *prog_name,
 			if (std_fd_save == -1)
 				return;
 		}
-		*status = 0;
 		if (is_builtin(prog_name, env, cmd_list[i].args,
 					   cmd_list[i].nb_args, status, exit_flag) == 0)
 		{
+			*status = 0;
 			full_path_cmd = _which(prog_name, *env, cmd_list[i].args, status);
 			if (full_path_cmd)
 			{
