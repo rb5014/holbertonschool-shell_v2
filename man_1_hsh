@@ -1,1 +1,35 @@
-q
+q.TH "HSH" 1 "January 14, 2024"
+.SH NAME
+hsh \- Holberton School Shell
+
+.SH SYNOPSIS
+.B hsh
+[\fIOPTION\fR]... [\fICOMMAND\fR] [ARGUMENTS]...
+
+.SH DESCRIPTION
+This manual page documents the Holberton School Shell (hsh).
+
+.SH OPTIONS
+The shell supports the following options:
+.TP
+\fB-h\fR
+Display help information.
+
+.SH EXAMPLES
+Run the shell:
+.B ./hsh
+.TP
+Run a command:
+.B ./hsh -c "ls -l"
+.TP
+Execute a script:
+.B ./hsh script.sh
+.TP
+Use redirection:
+.B ./hsh -c "echo Hello > output.txt"
+
+.SH AUTHORS
+See the AUTHORS.md file for a list of contributors.
+
+.SH BUGS
+Report any bugs or issues at https://github.com/your_username/holbertonschool-shell_v2/issues
